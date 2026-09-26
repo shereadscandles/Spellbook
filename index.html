@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spell Book">
+<meta name="theme-color" content="#161228">
+<title>Cryptic Spell Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Pirata+One&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#141414; --void:#161228; --night:#1F1B3D; --plum:#48294E; --plum2:#975F8F;
+  --bubble:#FF89E6; --scream:#E9097C; --mauve:#C199ED; --amethyst:#C370F6;
+  --pool:#36EDFF; --lime:#A3FF67; --zesty:#AFD609; --fiji:#4C99D1; --lilac:#DF96EF; --candy:#FFAEF1; --cobalt:#392989; --frost:#B8C5CD; --dusty:#BEA7B9;
+  --text:#F6F0FB; --dim:#A79CC4;
+  --up:#36EDFF; --down:#E9097C;
+  --burst:polygon(50% 0%,59% 14%,75% 7%,76% 24%,93% 25%,86% 41%,100% 50%,86% 59%,93% 75%,76% 76%,75% 93%,59% 86%,50% 100%,41% 86%,25% 93%,24% 76%,7% 75%,14% 59%,0% 50%,14% 41%,7% 25%,24% 24%,25% 7%,41% 14%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+html,body{background:var(--void);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;padding-bottom:calc(86px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(ellipse at 0% -5%,rgba(195,112,246,.6),transparent 55%),
+    radial-gradient(ellipse at 105% 25%,rgba(255,137,230,.3),transparent 50%),
+    radial-gradient(ellipse at -10% 65%,rgba(76,153,209,.35),transparent 50%),
+    radial-gradient(ellipse at 110% 80%,rgba(195,112,246,.35),transparent 50%),
+    radial-gradient(ellipse at 40% 115%,rgba(54,237,255,.15),transparent 55%),
+    var(--void);background-attachment:fixed}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.22;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .78  0 0 0 0 .6  0 0 0 0 .98  0 0 0 1.3 -.4'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.028;
+  background:repeating-conic-gradient(#fff 0 25%,transparent 0 50%) 0 0/30px 30px}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 14px}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--pool)}
+
+/* header */
+header{position:relative;z-index:2;padding:calc(14px + env(safe-area-inset-top)) 0 0}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.brand{position:relative}
+.brand .spark{position:absolute;left:-8px;top:-6px;width:38px;height:38px}
+.title{font-family:'Pirata One',serif;font-size:42px;line-height:.86;color:#fff;text-shadow:3px 3px 0 var(--scream),6px 6px 0 rgba(0,0,0,.6);letter-spacing:.5px}
+.sub{font-family:'Anton';text-transform:uppercase;font-size:12px;letter-spacing:2px;color:var(--bubble);margin-top:6px}
+.modebtn{font-family:'Anton';text-transform:uppercase;font-size:14px;border:2px solid #000;border-radius:999px;padding:8px 12px;box-shadow:3px 3px 0 #000;white-space:nowrap}
+.modebtn.paper{background:var(--pool);color:var(--ink)}
+.modebtn.real{background:var(--scream);color:#fff}
+.feed{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.dot.ok{background:var(--pool);box-shadow:0 0 8px var(--pool)}
+.dot.bad{background:var(--scream);box-shadow:0 0 8px var(--scream)}
+.checkband{height:22px;box-shadow:0 4px 0 var(--amethyst);margin:14px -14px 0;border-top:2px solid #000;border-bottom:2px solid #000;
+  background:repeating-conic-gradient(#fff 0 25%,#141414 0 50%) 0 0/22px 22px;transform:skewY(-1.2deg)}
+
+/* cards */
+.card{position:relative;background:rgba(24,19,44,.86);border:2px solid #000;border-radius:4px;box-shadow:5px 5px 0 var(--sc,var(--amethyst));padding:14px;margin:20px 0;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.card.pink{background:var(--bubble);color:var(--ink);--sc:var(--scream)}
+.card.lav{background:var(--mauve);color:var(--ink);--sc:var(--night)}
+.card.ink{background:var(--ink);--sc:var(--bubble)}
+.card.pool{--sc:var(--pool)}
+.card.fiji{background:var(--fiji);color:#fff;--sc:var(--ink)}
+.card.amy{background:var(--amethyst);color:#fff;--sc:var(--ink)}
+.card.candy{background:var(--candy);color:var(--ink);--sc:var(--amethyst)}
+.card.lilac{background:var(--lilac);color:var(--ink);--sc:var(--fiji)}
+.fiji .muted,.amy .muted{color:#fff;opacity:.9}.fiji label.f,.amy label.f{color:#fff}
+.candy .muted,.lilac .muted{color:#3b2342}.candy label.f,.lilac label.f{color:var(--ink)}
+.fiji input,.amy input,.candy input,.lilac input,.fiji textarea,.amy textarea,.fiji select,.amy select{background:#fff;color:var(--ink);border-color:var(--ink)}
+.fiji .chip,.amy .chip{color:#fff;border-color:#fff}.candy .chip,.lilac .chip{color:var(--ink);border-color:var(--ink)}
+.fiji .chip.on,.amy .chip.on,.candy .chip.on,.lilac .chip.on{background:var(--ink);color:var(--lime);border-color:#000}
+.fiji .btn.ghost,.amy .btn.ghost{color:#fff}
+.candy .pos,.lilac .pos{color:#006d78}
+.candy .empty,.lilac .empty,.pink .empty,.lav .empty{color:#3b2342;border-color:rgba(20,20,20,.45)}.fiji .empty,.amy .empty{color:#fff;border-color:rgba(255,255,255,.6)}.candy .neg,.lilac .neg{color:#9b0050}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.card-h h2{font-family:'Anton';font-size:22px;line-height:1;text-transform:uppercase;letter-spacing:.3px;display:flex;align-items:center;gap:7px}
+.card-h h2 .bolt{width:16px;height:20px;flex:none}
+.muted{color:var(--dim);font-size:13px;line-height:1.45}
+.pink .muted,.lav .muted{color:#3b2342}
+.small{font-size:12px}
+.mono{font-family:'Space Mono',monospace}
+.gothic{font-family:'Pirata One',serif}
+.anton{font-family:'Anton';text-transform:uppercase;letter-spacing:.3px}
+.row{display:flex;gap:8px;align-items:center}
+.row.wrapr{flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sp{flex:1}
+hr.torn{border:0;height:12px;margin:12px -14px;background:var(--ink);
+  clip-path:polygon(0 30%,4% 0,8% 50%,13% 10%,18% 60%,23% 20%,29% 55%,34% 5%,40% 45%,46% 15%,52% 60%,58% 10%,64% 50%,70% 0,76% 45%,82% 15%,88% 60%,94% 20%,100% 40%,100% 100%,0 100%)}
+
+.sticker{display:inline-flex;align-items:center;justify-content:center;font-family:'Anton';text-transform:uppercase;font-size:11px;letter-spacing:.5px;padding:4px 9px;border:2px solid #000;border-radius:999px;background:var(--lime);color:var(--ink);white-space:nowrap;transform:rotate(-2deg)}
+.sticker.pk{background:var(--scream);color:#fff}
+.sticker.pool{background:var(--pool)}
+.sticker.lav{background:var(--mauve)}
+.sticker.ink{background:var(--ink);color:#fff;border-color:var(--bubble)}
+.burst{display:inline-grid;place-items:center;width:64px;height:64px;clip-path:var(--burst);background:var(--scream);color:#fff;font-family:'Anton';font-size:12px;text-align:center;line-height:1;text-transform:uppercase;padding:10px}
+
+.btn{font-family:'Anton';text-transform:uppercase;letter-spacing:.4px;border:2px solid #000;background:var(--lime);color:var(--ink);padding:10px 16px;border-radius:999px;box-shadow:3px 3px 0 #000;font-size:15px;line-height:1}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+.btn.pk{background:var(--scream);color:#fff}
+.btn.pool{background:var(--pool)}
+.btn.lav{background:var(--mauve)}
+.btn.sm{padding:7px 11px;font-size:12px}
+.btn.block{width:100%;padding:14px;font-size:18px}
+.btn.ghost{background:transparent;color:inherit;border-color:currentColor;box-shadow:none}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:'Anton';text-transform:uppercase;font-size:13px;padding:6px 11px;border-radius:999px;border:2px solid var(--plum);background:transparent;color:var(--dim)}
+.chip.on{background:var(--bubble);border-color:#000;color:var(--ink)}
+.pink .chip,.lav .chip{color:var(--ink);border-color:var(--ink)}
+.pink .chip.on,.lav .chip.on{background:var(--ink);color:var(--bubble)}
+
+label.f{display:block;font-family:'Anton';text-transform:uppercase;font-size:12px;letter-spacing:.5px;margin:10px 0 4px;color:var(--mauve)}
+.pink label.f,.lav label.f{color:var(--ink)}
+input,select,textarea{width:100%;background:#0f0b1f;border:2px solid var(--plum);color:var(--text);border-radius:6px;padding:10px;font:inherit;font-size:16px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--bubble)}
+textarea{min-height:64px;resize:vertical}
+.pink input,.pink textarea,.pink select,.lav input,.lav textarea,.lav select{background:#fff;color:var(--ink);border-color:var(--ink)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--scream);flex:none}
+
+/* tabs */
+.tab{display:none}.tab.on{display:block}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--ink);border-top:2px solid var(--scream);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{flex:1;background:none;border:0;color:var(--dim);font-family:'Anton';font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:5px 0;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button .ic{font-size:19px;line-height:1;filter:grayscale(1) brightness(1.6);opacity:.7}
+nav.tabs button.on{color:var(--bubble)}
+nav.tabs button.on .ic{filter:none;opacity:1}
+
+/* status strip */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.stat{background:var(--ink);border:2px solid #000;border-radius:4px;padding:9px 10px;box-shadow:3px 3px 0 var(--plum2);min-height:62px}
+.stat .k{font-family:'Anton';text-transform:uppercase;font-size:10px;letter-spacing:1px;color:var(--dim)}
+.stat .v{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meter{height:7px;border-radius:9px;background:#2a2146;margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--pool),var(--bubble),var(--scream));transition:width .6s}
+.pos{color:var(--pool)}.neg{color:var(--scream)}
+.bigstats .pos,.counter .pos,.calc .pos,.wcard .pos,.stat .pos,.trade .pos,.setupalert .pos{color:var(--pool)!important}.bigstats .neg,.counter .neg,.calc .neg,.wcard .neg,.stat .neg,.trade .neg,.setupalert .neg{color:var(--scream)!important}
+.pink .pos,.lav .pos{color:#006d78}.pink .neg,.lav .neg{color:#9b0050}
+
+.banner{margin-top:14px;border:2px solid #000;border-radius:4px;padding:12px 14px;background:var(--scream);color:#fff;font-weight:700;box-shadow:4px 4px 0 #000}
+.banner .anton{font-size:18px;display:block;margin-bottom:2px}
+
+/* chart + verdict */
+.chartbox{position:relative;height:280px;margin:10px -6px 0}
+.chartbox canvas{width:100%;height:100%;display:block}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--dim);margin-top:6px;font-family:'Space Mono',monospace}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.verdict{border:3px solid var(--vc,var(--pool));border-radius:6px;padding:12px 14px;margin-top:12px;background:#0f0b1f;box-shadow:0 0 18px -4px var(--vc,var(--pool));min-height:128px;transition:border-color .5s,box-shadow .5s}
+.verdict .lbl{font-family:'Anton';text-transform:uppercase;font-size:11px;letter-spacing:1.5px;color:var(--dim)}
+.verdict .big{font-family:'Anton';font-size:52px;line-height:1;color:var(--vc,var(--pool));text-shadow:3px 3px 0 #000}
+.verdict .meta{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.verdict .hype{font-weight:500;line-height:1.4;margin-top:4px}
+.bf{margin-top:14px}
+.bfbar{display:flex;height:26px;border:2px solid #000;border-radius:999px;overflow:hidden;box-shadow:3px 3px 0 #000;position:relative}
+.bfbar .b{background:repeating-linear-gradient(45deg,var(--pool) 0 10px,#6ff4ff 10px 20px);transition:width 1.2s cubic-bezier(.3,1.4,.5,1);background-size:200% 100%;animation:slide 2s linear infinite}
+.bfbar .s{background:repeating-linear-gradient(-45deg,var(--scream) 0 10px,#ff3d9c 10px 20px);flex:1;background-size:200% 100%;animation:slide 2s linear infinite reverse}
+.bfbar .sw{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:18px;transition:left 1.2s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(1px 1px 0 #000)}
+@keyframes slide{to{background-position:100% 0}}
+.bflbl{display:flex;justify-content:space-between;font-family:'Anton';text-transform:uppercase;font-size:12px;margin-top:6px}
+
+/* lists */
+.setupalert{border:2px solid #000;border-radius:6px;background:var(--ink);padding:12px;margin-top:10px;box-shadow:4px 4px 0 var(--pool);animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+.setupalert.short{box-shadow:4px 4px 0 var(--scream)}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.lvls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.lvl{background:#1f1836;border-radius:4px;padding:6px 8px}
+.lvl .k{font-family:'Anton';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
+.lvl .v{font-family:'Space Mono',monospace;font-size:13px;font-weight:700}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.wcard{border:2px solid #000;border-radius:4px;background:var(--ink);color:var(--text);padding:10px;text-align:left;box-shadow:3px 3px 0 var(--plum2);min-height:86px}
+.wcard.sel{box-shadow:3px 3px 0 var(--bubble);border-color:var(--bubble)}
+.wcard .sym{font-family:'Anton';font-size:18px}
+.wcard .px{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;margin-top:2px}
+.wcard .ch{font-family:'Space Mono',monospace;font-size:12px}
+.srow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed rgba(20,20,20,.35)}
+.srow:last-child{border-bottom:0}
+.srow .sym{font-family:'Anton';font-size:18px;width:62px}
+.checks{list-style:none;margin-top:10px}
+.checks li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px}
+.checks li b{width:20px;flex:none;text-align:center}
+.rules{list-style:none}
+.rules li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:14px;line-height:1.35}
+.dirbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dirbtns button{font-family:'Anton';font-size:18px;text-transform:uppercase;padding:10px;border:2px solid #000;border-radius:6px;background:#fff;color:var(--ink)}
+.dirbtns button.on.long{background:var(--pool);box-shadow:3px 3px 0 #000}
+.dirbtns button.on.short{background:var(--scream);color:#fff;box-shadow:3px 3px 0 #000}
+.calc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.calc div{background:var(--ink);color:#fff;border-radius:4px;padding:8px}
+.calc .k{font-family:'Anton';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--bubble)}
+.calc .v{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;margin-top:2px}
+.trade{border:2px solid #000;border-radius:6px;background:var(--ink);color:var(--text);padding:12px;margin-top:10px;box-shadow:4px 4px 0 var(--mauve)}
+.bigstats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.bigstats div{background:var(--ink);border-radius:4px;padding:10px;color:#fff}
+.bigstats .k{font-family:'Anton';font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bubble)}
+.bigstats .v{font-family:'Anton';font-size:28px;line-height:1.05;margin-top:2px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:11px;letter-spacing:.8px;text-align:left;padding:6px 4px;border-bottom:2px solid #000}
+table.t td{padding:8px 4px;border-bottom:1px dashed rgba(20,20,20,.3);font-family:'Space Mono',monospace}
+.hist{padding:10px 0;border-bottom:1px dashed var(--plum)}
+.hist:last-child{border-bottom:0}
+.prog{margin:10px 0}
+.prog .top2{display:flex;justify-content:space-between;font-size:13px;font-weight:700}
+.bar{height:12px;border:2px solid #000;border-radius:999px;background:#fff;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--scream);transition:width .6s}
+.lesson{border:2px solid #000;border-radius:6px;padding:12px;margin-top:8px;background:var(--ink)}
+.lesson.done{opacity:.6}
+.lesson .n{font-family:'Anton';color:var(--bubble);font-size:12px;letter-spacing:1px}
+.lesson h3{font-family:'Anton';font-size:19px;text-transform:uppercase;font-weight:400;margin:2px 0 6px}
+.lesson p{font-size:14px;line-height:1.5;margin-top:6px}
+.lesson .task{border-left:3px solid var(--lime);padding-left:10px;margin-top:10px;font-size:14px}
+.pat{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--plum)}
+.pat:last-child{border-bottom:0}
+.pat h4{font-family:'Anton';font-size:17px;font-weight:400;text-transform:uppercase}
+.pat svg{background:#0f0b1f;border-radius:4px;border:2px solid #000}
+.ritem{display:flex;gap:10px;align-items:center;padding:9px 0;font-weight:700;border-bottom:1px dashed rgba(20,20,20,.35)}
+.ritem:last-child{border-bottom:0}
+.streak{font-family:'Anton';font-size:40px;line-height:1}
+.empty{border:2px dashed var(--plum);border-radius:6px;padding:16px;text-align:center;color:var(--dim);font-size:14px;margin-top:8px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;z-index:60;background:var(--ink);color:#fff;border:2px solid var(--bubble);border-radius:10px;padding:12px 16px;box-shadow:4px 4px 0 var(--scream);font-weight:700;max-width:90vw;transition:.35s;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(10,6,20,.8);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:14px}
+.modal.on{display:flex}
+.modal .card{width:100%;max-width:520px;margin:0 0 calc(80px + env(safe-area-inset-bottom))}
+.foot{text-align:center;color:var(--dim);font-size:11px;padding:10px 0 20px;line-height:1.5}
+.q{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:2px solid currentColor;background:transparent;font:700 12px 'Space Grotesk';line-height:1;padding:0;opacity:.85;vertical-align:middle;margin-left:4px;flex:none}
+.help{font-size:13px;line-height:1.45;margin-top:5px;opacity:.85}
+.qt{font-family:'Anton';text-transform:uppercase;font-size:20px;line-height:1.1;margin-top:14px}
+.qt:first-child{margin-top:4px}
+.gstep{display:none}.gstep.on{display:block;animation:pop .35s ease}
+.dots{display:flex;gap:6px;margin:4px 0 10px}
+.dots i{flex:1;height:6px;border-radius:9px;background:rgba(20,20,20,.18);border:1px solid #000}
+.dots i.on{background:var(--ink)}
+.dirbtns button small{display:block;font-family:'Space Grotesk';font-size:11px;text-transform:none;font-weight:500;margin-top:3px;letter-spacing:0}
+.missing{background:rgba(20,20,20,.1);border:2px dashed var(--ink);border-radius:6px;padding:8px 10px;margin-top:12px;font-size:13px;line-height:1.5}
+.gnav{display:flex;gap:8px;margin-top:14px}
+.gnav .btn{flex:1;padding:13px}
+.rulebox{background:#fff;border:2px solid #000;border-radius:6px;padding:4px 10px;margin-top:8px}
+.rulebox li{border-bottom:1px dashed rgba(20,20,20,.25)}
+.rulebox li:last-child{border-bottom:0}
+.rulebox .tech{display:block;font-size:11px;opacity:.6;margin-top:2px}
+.next{background:var(--lime);color:var(--ink);--sc:var(--amethyst)}
+.next .big{font-family:'Anton';text-transform:uppercase;font-size:24px;line-height:1.1}
+.next p{margin-top:6px;line-height:1.45;font-weight:500}
+.onb .emoji{font-size:48px;line-height:1}
+.onb h2{font-family:'Anton';text-transform:uppercase;font-size:28px;line-height:1.05;margin:8px 0}
+.onb p{line-height:1.5;margin-top:8px}
+.gl{padding:10px 0;border-bottom:1px dashed rgba(20,20,20,.3)}
+.gl:last-child{border-bottom:0}
+.gl b{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:16px}
+.gl div{font-size:14px;line-height:1.45;margin-top:2px}
+.cd{font-family:'Space Mono',monospace;font-weight:700;font-size:26px;line-height:1}
+.phase{display:flex;height:10px;border:2px solid #000;border-radius:999px;overflow:hidden;margin-top:8px;background:#2a2146}
+.phase i{display:block;height:100%}
+.rc{display:inline-grid;place-items:center;width:26px;height:26px;border:2px solid #000;border-radius:4px;font-family:'Anton';font-size:12px}
+.rc.w{background:var(--pool);color:var(--ink)}.rc.l{background:var(--scream);color:#fff}
+.counter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.counter div{background:var(--ink);color:#fff;border-radius:6px;padding:10px 4px;border:2px solid #000}
+.counter .v{font-family:'Anton';font-size:34px;line-height:1}
+.counter .k{font-family:'Anton';font-size:11px;letter-spacing:1px;color:var(--bubble);text-transform:uppercase;margin-top:3px}
+.bigcall{border:3px solid var(--bc,var(--mauve));border-radius:8px;padding:14px;margin-top:10px;background:#0f0b1f;box-shadow:0 0 22px -4px var(--bc,var(--mauve));text-align:center}
+.bigcall .w{font-family:'Anton';font-size:58px;line-height:1;color:var(--bc);text-shadow:3px 3px 0 #000}
+@media (min-width:640px){.title{font-size:54px}.chartbox{height:340px}}
+</style>
+
+<style id="arcade-haze">
+/* ===== ARCADE HAZE THEME (B + C) ===== */
+html,body{background:#170b33}
+body{background:
+  radial-gradient(ellipse at 0% 0%,rgba(195,112,246,.55),transparent 50%),
+  radial-gradient(ellipse at 100% 20%,rgba(255,137,230,.35),transparent 45%),
+  radial-gradient(ellipse at 0% 70%,rgba(76,153,209,.35),transparent 45%),
+  radial-gradient(ellipse at 100% 95%,rgba(233,9,124,.28),transparent 45%),
+  linear-gradient(180deg,#2a1452,#170b33 60%,#120828)!important;background-attachment:fixed!important}
+body::after{opacity:.035!important;background-size:34px 34px!important}
+.wrap::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background-image:radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#FFAEF1,transparent),radial-gradient(1.2px 1.2px at 40% 42%,#fff,transparent),radial-gradient(1px 1px at 88% 55%,#36EDFF,transparent),radial-gradient(1.3px 1.3px at 22% 78%,#DF96EF,transparent),radial-gradient(1px 1px at 60% 88%,#fff,transparent),radial-gradient(1.2px 1.2px at 94% 30%,#fff,transparent);
+  animation:twk 5s ease-in-out infinite alternate}
+@keyframes twk{to{opacity:.2}}
+
+/* header */
+header{padding-top:calc(18px + env(safe-area-inset-top))!important}
+header .moon{position:absolute;right:4px;top:calc(96px + env(safe-area-inset-top));width:58px;height:58px;filter:drop-shadow(0 0 16px rgba(223,150,239,.8));opacity:.95;z-index:0}
+.twinkle{position:absolute;color:#FFAEF1;font-size:14px;text-shadow:0 0 8px #FF89E6;animation:tw 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes tw{50%{opacity:.2;transform:scale(.6) rotate(20deg)}}
+.top{position:relative;z-index:1}
+.title{font-size:46px!important;color:#fff!important;text-shadow:-2px 0 0 #36EDFF,2px 0 0 #E9097C,0 0 22px rgba(255,137,230,.75)!important;letter-spacing:.5px}
+.sub span{display:inline-block;background:linear-gradient(90deg,#FF89E6,#C370F6);color:#141414;border:2px solid #141414;border-radius:999px;padding:4px 10px;box-shadow:3px 3px 0 #141414;transform:rotate(-2deg);letter-spacing:1.5px}
+.sub{margin-top:10px!important}
+.modebtn{border-radius:999px!important;box-shadow:3px 3px 0 #141414,0 0 16px rgba(54,237,255,.55)!important}
+.checkband{height:18px!important;margin:16px -14px 0!important;transform:none!important;border-radius:0;box-shadow:0 3px 0 #C370F6,0 6px 0 #FF89E6!important}
+
+/* stat strip */
+.stat{border-radius:16px!important;background:linear-gradient(160deg,#2c1760,#1a0d3a)!important;box-shadow:3px 3px 0 #141414,0 0 0 1.5px rgba(223,150,239,.35) inset!important}
+
+/* cards */
+.card{border-radius:20px!important;border:2px solid #141414!important;overflow:hidden;
+  background:linear-gradient(160deg,rgba(58,28,112,.92),rgba(26,12,58,.94))!important;
+  box-shadow:6px 6px 0 #141414,0 0 26px -6px var(--gl,rgba(195,112,246,.8))!important;padding:16px!important}
+.card:not(.pink):not(.lav):not(.lilac):not(.amy):not(.fiji):not(.candy):not(.next)::before{content:'';position:absolute;left:0;right:0;top:0;height:7px;background:repeating-conic-gradient(#fff 0 25%,#141414 0 50%) 0 0/7px 7px;opacity:.85}
+.card.pink{background:linear-gradient(145deg,#FF89E6,#C370F6)!important;--gl:rgba(255,137,230,.9)}
+.card.candy{background:linear-gradient(145deg,#FFAEF1,#DF96EF 55%,#C370F6)!important;--gl:rgba(255,174,241,.9)}
+.card.lilac{background:linear-gradient(145deg,#DF96EF,#C370F6 60%,#8f6fe0)!important;--gl:rgba(223,150,239,.9)}
+.card.lav{background:linear-gradient(145deg,#C199ED,#DF96EF)!important}
+.card.amy{background:linear-gradient(145deg,#C370F6,#7a4fd8 55%,#4C99D1)!important;--gl:rgba(195,112,246,.9)}
+.card.fiji{background:linear-gradient(145deg,#4C99D1,#6d6fe0 55%,#C370F6)!important;--gl:rgba(76,153,209,.9)}
+.card.pool{--gl:rgba(54,237,255,.6)}
+.card.ink{background:linear-gradient(160deg,#1c1030,#0e0818)!important;--gl:rgba(255,137,230,.6)}
+.lilac .muted,.lilac label.f{color:#2a1440!important}
+.card-h h2{font-size:23px!important}
+.card-h h2 .bolt{filter:drop-shadow(0 0 4px #FF89E6)}
+
+/* next step */
+.next{background:linear-gradient(135deg,#A3FF67,#36EDFF 130%)!important;--gl:rgba(163,255,103,.8)}
+
+/* inner tiles */
+.lvl,.stat,.calc div,.bigstats div,.counter div,.wcard{border-radius:12px!important}
+.wcard{background:linear-gradient(160deg,#1f1238,#120a22)!important}
+.setupalert,.trade,.lesson{border-radius:14px!important;background:linear-gradient(160deg,#1f1238,#120a22)!important}
+.verdict,.bigcall{border-radius:16px!important;background:radial-gradient(ellipse at 50% 0%,rgba(195,112,246,.25),transparent 60%),#120a22!important}
+.bfbar{height:22px!important}
+input,select,textarea{border-radius:12px!important}
+.btn{border-radius:999px!important;box-shadow:3px 3px 0 #141414,0 0 14px -2px rgba(163,255,103,.6)!important}
+.btn.pk{box-shadow:3px 3px 0 #141414,0 0 14px -2px rgba(233,9,124,.7)!important}
+.btn.pool{box-shadow:3px 3px 0 #141414,0 0 14px -2px rgba(54,237,255,.7)!important}
+.btn.ghost{box-shadow:none!important}
+.sticker{box-shadow:2px 2px 0 #141414}
+.chip.on{box-shadow:2px 2px 0 #141414}
+.dirbtns button{border-radius:14px!important}
+.chartbox canvas{border-radius:12px}
+
+/* floating nav */
+nav.tabs{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;border-radius:22px!important;padding:6px 4px!important;
+  background:rgba(20,10,40,.88)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:2px solid #141414!important;
+  box-shadow:0 0 0 1.5px rgba(223,150,239,.45) inset,0 8px 28px rgba(0,0,0,.55),0 0 22px -4px rgba(195,112,246,.8)!important}
+nav.tabs button{border-radius:14px;padding:6px 0!important}
+nav.tabs button.on{background:linear-gradient(145deg,#FF89E6,#C370F6);color:#141414!important}
+body{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+.toast{border-radius:16px!important;bottom:calc(104px + env(safe-area-inset-bottom))!important}
+.modal .card{border-radius:24px!important}
+.spark-in{display:inline-block;width:.62em;height:.62em;vertical-align:top;margin:.02em 0 0 .08em;filter:drop-shadow(0 0 6px #FF89E6);animation:tw 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="bolt" viewBox="0 0 16 22"><path d="M10 0 1 13h6l-2 9 10-14H9z" fill="#E9097C" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+<header>
+  <svg class="moon" viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="mg" cx="35%" cy="35%"><stop offset="0" stop-color="#FFAEF1"/><stop offset=".6" stop-color="#DF96EF"/><stop offset="1" stop-color="#C370F6"/></radialGradient></defs><path d="M62 8a44 44 0 1 0 30 70A36 36 0 1 1 62 8z" fill="url(#mg)" stroke="#141414" stroke-width="3"/></svg>
+  <span class="twinkle" style="top:calc(10px + env(safe-area-inset-top));left:60%">✦</span><span class="twinkle" style="top:calc(150px + env(safe-area-inset-top));left:74%;animation-delay:.8s">✧</span><span class="twinkle" style="top:calc(84px + env(safe-area-inset-top));right:24%;animation-delay:1.6s">✦</span>
+  <div class="top">
+    <div class="brand">
+      
+      <div class="title" data-t="Cryptic Spell Book">Cryptic<svg class="spark-in" viewBox="0 0 40 40"><g stroke="#FF89E6" stroke-width="1.6" stroke-linecap="round">
+        <path d="M20 2v7M20 31v7M2 20h7M31 20h7M7 7l5 5M28 28l5 5M33 7l-5 5M12 28l-5 5"/></g>
+        <path d="M22 11 15 22h5l-2 8 8-12h-5z" fill="#E9097C"/></svg><br>Spell Book</div>
+      <div class="sub"><span>✦ day trader war room ✦</span></div>
+    </div>
+    <div style="text-align:right">
+      <button id="modeBtn" class="modebtn paper">📝 Paper</button><br>
+      <span class="feed"><span id="feedDot" class="dot"></span><span id="feedTxt">connecting…</span></span>
+    </div>
+  </div>
+  <div class="checkband"></div>
+</header>
+
+<!-- ============ TODAY ============ -->
+<section id="t-today" class="tab on">
+  <div class="strip" id="strip"></div>
+  <div id="lockBanner"></div>
+  <div id="nextStep"></div>
+
+  <div class="card pool">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Live Setups</h2><span class="sticker pool" id="scanTag">scanning</span></div>
+    <div class="muted small">The app watches BTC, ETH, SOL, XRP and DOGE for your 3 patterns (setups <button class="q" onclick="gl('setup')" style="width:16px;height:16px;font-size:10px">?</button>). When one shows up, it lands here with a sparkle sound.</div>
+    <div id="liveSetups"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>The Battlefield</h2><span class="sticker ink" id="bfChip">—</span></div>
+    <div class="chips" id="symChips"></div>
+    <div class="row" style="margin-top:8px"><div class="chips" id="tfChips"></div><div class="sp"></div><span class="mono" style="font-size:20px;font-weight:700" id="bigPx">—</span></div>
+    <div class="chartbox"><canvas id="chart"></canvas></div>
+    <div class="legend"><span><i style="background:#FF89E6"></i>9 EMA <button class="q" onclick="gl('ema')">?</button></span><span><i style="background:#C199ED"></i>20 EMA</span><span><i style="background:#36EDFF"></i>VWAP <button class="q" onclick="gl('vwap')">?</button></span><span><i style="background:#A3FF67"></i>setup</span><span>candles <button class="q" onclick="gl('candle')">?</button></span></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="bf">
+      <div class="bfbar" id="bfbar"><div class="b" id="bfB" style="width:50%"></div><div class="s"></div><span class="sw" id="bfSw" style="left:50%">⚔️</span></div>
+      <div class="bflbl"><span class="pos" id="bfBl">Buyers 50%</span><span class="neg" id="bfSl">Sellers 50%</span></div>
+    </div>
+  </div>
+
+  <div class="card amy">
+    <div class="card-h"><h2>🔮 Crypto Watch</h2><span class="sticker ink">24/7</span></div>
+    <div class="wgrid" id="cryptoGrid"></div>
+  </div>
+
+  <div class="card lilac">
+    <div class="card-h"><h2>📈 Stock Watch</h2><span class="sticker pk" id="mktTag">—</span></div>
+    <div id="stockList"></div>
+  </div>
+
+  <div class="card fiji">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Trading Conditions</h2></div>
+    <div id="conditions"></div>
+  </div>
+</section>
+
+<!-- ============ TRADE ============ -->
+<section id="t-calls" class="tab">
+  <div class="card ink">
+    <div class="card-h"><h2>⏳ The Spellbook</h2><div class="chips" id="lenChips"></div></div>
+    <div id="coinBoard" class="wgrid" style="grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px"></div>
+    <div class="muted small">UP/DOWN calls on every Kalshi crypto coin. Tap a coin above to focus it. The bot debates for the first part of each round, then <b>locks</b> its call and gets graded honestly. <span style="display:none"> The bot debates for the first part of the round, </span></div>
+    <div id="callBox"></div>
+    <label class="f">Line to beat (from your Kalshi market, optional)</label>
+    <div class="row"><input id="kLine" inputmode="decimal" placeholder="blank = price when the round started"><button class="btn sm lav" id="kLineClr">Clear</button></div>
+  </div>
+
+  <div class="card amy">
+    <div class="card-h"><h2>🏆 War Record</h2><button class="btn sm ghost" id="calReset">reset</button></div>
+    <div class="counter" id="callCounter"></div>
+    <div class="row wrapr" id="callStrip" style="margin-top:10px;gap:5px"></div>
+    <div class="muted small" id="callVerdict" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card fiji">
+    <div class="card-h"><h2>🎟 My Bet</h2><span class="sticker pk" id="kbTag">—</span></div>
+    <div id="kbBox"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Kalshi Market</h2></div>
+    <div class="muted small">Paste a Kalshi market ticker for the coin you're focused on to pull its live price and strike. If Kalshi blocks the browser, just type the line to beat above.</div>
+    <div class="row" style="margin-top:8px"><input id="kTick" placeholder="e.g. KXBTC15M-..." autocapitalize="characters" autocomplete="off"><button class="btn sm pool" id="kTickGo">Load</button></div>
+    <div id="kMkt" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card pool">
+    <div class="card-h"><h2>⚡ Scalp Radar</h2><span class="sticker ink">1-min · risky</span></div>
+    <div id="scalpBox"></div>
+  </div>
+
+  <div class="card candy">
+    <div class="card-h"><h2>🧪 Accuracy Lab</h2></div>
+    <div class="muted small">Replays the last ~20 hours of the selected coin through the exact same call logic.</div>
+    <button class="btn block lav" id="labGo" style="margin-top:10px">Run the backtest</button>
+    <div id="labBox" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card lilac">
+    <div class="card-h"><h2>📒 Kalshi Ledger</h2></div>
+    <div class="bigstats" id="kStats"></div>
+    <div id="kList" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section id="t-trade" class="tab">
+  <div class="strip" id="strip2"></div>
+  <div id="lockBanner2"></div>
+  <div class="card pink" id="gateCard">
+    <div class="card-h"><h2>🚪 The Gate <button class="q" onclick="gl('gate')">?</button></h2><span class="sticker ink" id="gStepTag">step 1 of 4</span></div>
+    <div class="dots" id="gDots"><i></i><i></i><i></i><i></i></div>
+
+    <div class="gstep on" data-s="1">
+      <div class="qt">1. What do you want to trade?</div>
+      <div class="chips" id="gSymChips" style="margin-top:8px"></div>
+      <input id="gSym" list="symList" placeholder="or type one, like F for Ford" autocapitalize="characters" autocomplete="off" style="margin-top:8px">
+      <datalist id="symList"></datalist>
+      <div class="qt">Which way do you think it goes?</div>
+      <div class="dirbtns" style="margin-top:8px"><button class="long on" data-d="LONG">▲ Up<small>you buy, you profit if it rises</small></button><button class="short" data-d="SHORT">▼ Down<small>you "short" it, profit if it falls</small></button></div>
+      <div class="help">New? Stick to <b>Up</b> trades for now. Going down (shorting) is harder and many beginner accounts can't do it.</div>
+    </div>
+
+    <div class="gstep" data-s="2">
+      <div class="qt">2. Which setup is it?</div>
+      <div class="help">A setup is one of your 3 patterns (see the Setups tab). If the app pinged you, it's already picked. Don't trade anything that isn't one of these.</div>
+      <select id="gSetup" style="margin-top:8px"></select>
+      <div class="qt">Look at the chart. Is each of these true?</div>
+      <div class="help">Only tick what you can actually see. If any are false, it's not a trade. That's the Gate doing its job.</div>
+      <ul class="rules rulebox" id="gRules"></ul>
+    </div>
+
+    <div class="gstep" data-s="3">
+      <div class="qt">3. Your in & out prices</div>
+      <div class="help">Not sure? Tap the button and the app picks sensible prices from the chart for you.</div>
+      <button class="btn pool block" id="gSuggest" style="margin-top:10px">✨ Fill it in for me</button>
+      <label class="f">Get in at (entry) <button class="q" onclick="gl('entry')">?</button></label>
+      <input id="gEntry" inputmode="decimal">
+      <label class="f">Bail out at (stop loss) <button class="q" onclick="gl('stop')">?</button></label>
+      <input id="gStop" inputmode="decimal">
+      <div class="help">If price hits this, you were wrong. You get out, no exceptions, no "it'll come back".</div>
+      <label class="f">Take profit at (target) <button class="q" onclick="gl('target')">?</button></label>
+      <input id="gTarget" inputmode="decimal">
+      <label class="f">How much to buy (size) <button class="q" onclick="gl('size')">?</button></label>
+      <input id="gSize" inputmode="decimal">
+      <div class="help" id="gSizeHelp"></div>
+      <div class="calc" id="gCalc"></div>
+      <div class="row wrapr" style="margin-top:8px"><button class="btn sm ghost" id="gLive">Entry = price now</button><button class="btn sm ghost" id="g2R">Target = 2× risk</button><button class="btn sm ghost" id="gMax">Size = safe max</button></div>
+    </div>
+
+    <div class="gstep" data-s="4">
+      <div class="qt">4. Why are you taking it?</div>
+      <div class="help">One honest sentence. Future you reads this in the Journal to learn what works.</div>
+      <textarea id="gReason" style="margin-top:8px" placeholder="e.g. BTC was climbing, dipped to the purple line and bounced back up"></textarea>
+      <div class="qt">Final check</div>
+      <ul class="checks" id="gChecks"></ul>
+      <button class="btn pk block" id="gGo" style="margin-top:12px">Cast the trade ⚔️</button>
+      <div class="help" id="gNote"></div>
+    </div>
+
+    <div class="missing" id="gMissing" style="display:none"></div>
+    <div class="gnav"><button class="btn ghost" id="gBack">← Back</button><button class="btn" id="gNext">Next →</button></div>
+    <button class="btn sm ghost" style="margin-top:10px;font-size:11px" onclick="showExample()">Show me a full example</button>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Open Trades</h2><span class="sticker lav" id="openCount">0</span></div>
+    <div id="openTrades"></div>
+  </div>
+</section>
+
+<!-- ============ JOURNAL ============ -->
+<section id="t-journal" class="tab">
+  <div class="card pink">
+    <div class="card-h"><h2>🕯 War Record</h2><div class="chips" id="jMode"></div></div>
+    <div class="bigstats" id="jBig"></div>
+    <div class="muted small" style="margin-top:10px" id="jExplain"></div>
+  </div>
+  <div class="card amy">
+    <div class="card-h"><h2>📊 By Setup</h2></div>
+    <div id="jSetups"></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Equity Curve</h2></div>
+    <div class="chartbox" style="height:180px"><canvas id="eqCv"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Every Trade</h2></div>
+    <div id="jList"></div>
+  </div>
+</section>
+
+<!-- ============ SETUPS ============ -->
+<section id="t-setups" class="tab">
+  <div class="card ink">
+    <div class="card-h"><h2>📜 The Setup Library</h2></div>
+    <div class="muted">Three setups. That's it. Master one before you touch another. Traders who trade everything end up trading nothing well.</div>
+  </div>
+  <div id="setupLib"></div>
+  <div class="card pool">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Today's Fires</h2></div>
+    <div id="detFeed"></div>
+  </div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section id="t-learn" class="tab">
+  <div class="card pink">
+    <div class="card-h"><h2>🌙 Tonight's Ritual</h2><div style="text-align:right"><div class="streak" id="streak">0</div><div class="anton small">day streak</div></div></div>
+    <div id="ritual"></div>
+    <label class="f">Tomorrow's plan: symbols, levels, which setup you're hunting</label>
+    <textarea id="planTxt" placeholder="BTC: watching 20 EMA pullbacks, yesterday high 64,200. F: range break only."></textarea>
+  </div>
+
+  <div class="card fiji">
+    <div class="card-h"><h2>🎓 Graduation</h2><span class="sticker pk" id="gradTag">locked</span></div>
+    <div class="muted">Real mode unlocks when ONE setup has 50+ paper trades, positive expectancy, over at least 30 days. Earned, not toggled.</div>
+    <div id="gradBox"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Chart Replay Drill</h2><span class="sticker pool" id="drillScore">0/0</span></div>
+    <div class="muted small">Real BTC 15-min history. Read the chart, call the next hour. Builds pattern instinct without risking a cent.</div>
+    <div class="chartbox" style="height:230px"><canvas id="drillCv"></canvas></div>
+    <div id="drillCtl" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Lesson Path</h2><span class="sticker lav" id="lessonProg">0/0</span></div>
+    <div id="lessons"></div>
+  </div>
+
+  <div class="card pink">
+    <div class="card-h"><h2>🕯 Candle Cheat Sheet</h2></div>
+    <div class="muted">A pattern means nothing in the middle of nowhere. It only matters at a level (support, resistance, VWAP, an EMA).</div>
+    <div id="cheat"></div>
+  </div>
+
+  <div class="card lav">
+    <div class="card-h"><h2>📖 Word Bank</h2></div>
+    <div class="muted">Every confusing word in the app, in plain English.</div>
+    <div id="glossList"></div>
+  </div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="t-settings" class="tab">
+  <div class="card lav">
+    <div class="card-h"><h2>⚙️ Your Rules</h2></div>
+    <div class="grid2">
+      <div><label class="f">Paper starting $</label><input id="sPaper" inputmode="decimal"></div>
+      <div><label class="f">Real starting $</label><input id="sReal" inputmode="decimal"></div>
+      <div><label class="f">Risk per trade %</label><input id="sRisk" inputmode="decimal"></div>
+      <div><label class="f">Daily max loss %</label><input id="sDaily" inputmode="decimal"></div>
+      <div><label class="f">Max trades / day</label><input id="sMaxT" inputmode="numeric"></div>
+      <div><label class="f">Min reward:risk</label><input id="sRR" inputmode="decimal"></div>
+      <div><label class="f">Kalshi daily loss cap $</label><input id="sKCap" inputmode="decimal"></div>
+      <div><label class="f">Kalshi bets / day</label><input id="sKMax" inputmode="numeric"></div>
+    </div>
+    <div class="muted small" style="margin-top:8px">Pros usually risk 0.5–1% per trade and stop for the day at 2–3% down. Don't raise these after a losing day.</div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Stocks + Alerts</h2></div>
+    <label class="f">Stock watchlist (comma separated)</label>
+    <input id="sStocks" autocapitalize="characters">
+    <label class="f">Finnhub API key (free, for live stock quotes)</label>
+    <input id="sFinn" placeholder="get one free at finnhub.io" autocomplete="off">
+    <div class="row wrapr" style="margin-top:12px">
+      <label class="row"><input type="checkbox" id="sSound"> Sound alerts</label>
+      <button class="btn sm pool" id="sTest">Test sound</button>
+      <button class="btn sm lav" id="sNotif">Enable notifications</button>
+    </div>
+    <div class="muted small" style="margin-top:8px">iPhone: notifications only work after you Share → Add to Home Screen and open it from there.</div>
+  </div>
+  <div class="card pink">
+    <div class="card-h"><h2>💾 Backup</h2></div>
+    <div class="muted">Your journal lives on this device only. Export a backup weekly so you never lose your record again.</div>
+    <div class="row wrapr" style="margin-top:10px">
+      <button class="btn" id="sExport">Export backup</button>
+      <label class="btn pool" style="display:inline-block">Import<input type="file" id="sImport" accept=".json,application/json" style="display:none"></label>
+      <button class="btn pk" id="sReset">Wipe all</button>
+    </div>
+  </div>
+  <div class="card ink">
+    <div class="card-h"><h2>🔍 What's real in here</h2></div>
+    <div class="muted" style="line-height:1.6">Crypto prices, candles and setup scans: live from Coinbase's public feed (no key, works in the US). If the feed drops, the dot goes pink and nothing is faked.<br><br>Stock quotes: live from Finnhub with your free key. Stock setups aren't auto-scanned (free candle data isn't available), so tap a stock to open its chart on TradingView.<br><br>This app never places orders. Real mode = you click buy/sell in your broker, then log it here.</div>
+  </div>
+</section>
+
+<div class="foot">Not financial advice. Most day traders lose money. This thing exists to make you one of the few who don't.</div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-t="today" class="on"><span class="ic">🔮</span>Today</button>
+  <button data-t="calls"><span class="ic">⏳</span>Calls</button>
+  <button data-t="trade"><span class="ic">⚔️</span>Trade</button>
+  <button data-t="journal"><span class="ic">🕯</span>Journal</button>
+  <button data-t="setups"><span class="ic">📜</span>Setups</button>
+  <button data-t="learn"><span class="ic">🌙</span>Learn</button>
+  <button data-t="settings"><span class="ic">⚙️</span>Rules</button>
+</nav>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="card pink" id="modalCard"></div></div>
+
+<script>
+/* ================== CONSTANTS ================== */
+const API='https://api.exchange.coinbase.com';
+const CRYPTO=['BTC-USD','ETH-USD','SOL-USD','XRP-USD','DOGE-USD'];
+const KEY='csb_warroom_v1';
+const $=s=>document.querySelector(s);
+const short=p=>String(p).replace('-USD','');
+const isCrypto=s=>/-USD$/.test(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const n=parseFloat(String(v).replace(/[,$\s]/g,''));return isFinite(n)?n:NaN};
+function fmt(p){if(p==null||!isFinite(p))return'—';const a=Math.abs(p);if(a>=1000)return p.toLocaleString('en-US',{maximumFractionDigits:2});if(a>=100)return p.toFixed(2);if(a>=1)return p.toFixed(3);return p.toFixed(5);}
+function money(v){if(!isFinite(v))return'—';return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+const pct=v=>isFinite(v)?(v>=0?'+':'')+v.toFixed(2)+'%':'—';
+const dl=d=>d==='LONG'?'▲ UP':'▼ DOWN';
+const rr=v=>isFinite(v)?(v>=0?'+':'')+v.toFixed(2)+'R':'—';
+
+const etFmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,weekday:'short'});
+function et(t){const p={};etFmt.formatToParts(new Date(t)).forEach(x=>p[x.type]=x.value);const h=(+p.hour)%24;return{date:`${p.year}-${p.month}-${p.day}`,mins:h*60+(+p.minute),wd:p.weekday};}
+const today=()=>et(Date.now()).date;
+const timeStr=t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'});
+const dateStr=t=>new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/New_York'});
+
+const SETUPS={
+  pullback:{name:'Trend Pullback',icon:'🌙',one:'Ride a trend by buying the dip (or shorting the pop) instead of chasing the top.',
+    rules:['9 EMA above 20 EMA above 50 EMA (short: all flipped)','Price pulled back and touched the 20 EMA','Trigger candle closed back past the 9 EMA, in the trend direction','Not running straight into a big level (yesterday high/low, round number)'],
+    plain:['The chart is clearly climbing: pink line above purple line, both pointing up','Price dipped down and touched (or almost touched) the purple line','The newest finished candle closed back above the pink line','No obvious ceiling right above (yesterday\'s high, or a round number like 65,000)'],
+    entry:'Close of the trigger candle',stop:'Just past the pullback swing low (short: swing high)',target:'2R, or the prior high if it comes first',
+    avoid:'EMAs flat and tangled like spaghetti. No trend = no trend pullback.'},
+  vwap:{name:'VWAP Reclaim',icon:'💎',one:'When price takes VWAP back on real volume, the side that lost control is back.',
+    rules:['At least 3 candles closed on the other side of VWAP','Trigger candle closed back across VWAP','Trigger volume at least 1.2× the recent average','Room to run before the next level'],
+    plain:['Price sat under the cyan dashed line (VWAP) for at least 3 candles','The newest finished candle closed back above the cyan line','That candle\'s volume bar (bottom of chart) is taller than the ones before it','There\'s room to move up before the next ceiling'],
+    entry:'Close of the reclaim candle',stop:'Past the low of the reclaim move (short: high)',target:'2R, or the day high/low',
+    avoid:'VWAP already crossed 5+ times today. That is chop, not a reclaim.'},
+  orb:{name:'Morning Range Break',icon:'⚡',one:'The first hour (9:30 to 10:30 ET) builds a box. A clean close outside it, with volume, often runs.',
+    rules:['Range marked from 9:30 to 10:30 AM ET','Candle CLOSED outside the range (a wick doesn\'t count)','Breakout volume above average','Between 10:30 AM and 4 PM ET'],
+    plain:['The shaded box on the 5m chart (9:30 to 10:30 AM) is showing','A candle CLOSED above the box (just a wick poking out doesn\'t count)','That candle\'s volume bar is taller than normal','It\'s between 10:30 AM and 4 PM Eastern, on a weekday'],
+    entry:'Close of the breakout candle',stop:'Middle of the range',target:'2R',
+    avoid:'A giant range (stop too far away) or a break straight into yesterday\'s high/low.'}
+};
+
+const LESSONS=[
+ {t:'How day traders lose (and how you won\'t)',b:['Most retail day traders lose money. Not because they can\'t read charts, but because of three habits: risking too much per trade, trading without a plan, and revenge-trading after a loss.','Your edge starts with survival. Risk 1% or less per trade, stop for the day at your max loss, and only take setups you\'ve written down. Everything in this app is built around those three rules.'],task:'Open Rules and set your risk % (1% or less) and daily max loss (3% or less).'},
+ {t:'Reading one candle',b:['Every candle is a fight. The body shows where price opened and closed; the wicks show where it got pushed and rejected.','Big body, tiny wicks = one side dominated. Long lower wick = sellers pushed down, buyers slammed it back. Long upper wick = buyers tried, sellers rejected them.'],task:'Do 5 replay reps. Before guessing, say out loud who won the last 3 candles.'},
+ {t:'Location beats pattern',b:['A hammer in the middle of a range means nothing. A hammer ON support, after a drop, means buyers defended a level.','Before any pattern, ask: where is this happening? At a level, or in no-man\'s land?'],task:'On today\'s BTC chart, find yesterday\'s high and low and write them in your plan.'},
+ {t:'Support & resistance',b:['Support is a price where buyers showed up before. Resistance is where sellers showed up before. The more times a level held, the more people are watching it.','Levels are zones, not exact lines. Round numbers (like 60,000) act as levels too because humans love them.'],task:'Mark 2 support and 2 resistance zones on BTC in tomorrow\'s plan.'},
+ {t:'Trend & the EMAs',b:['Uptrend = higher highs and higher lows. Downtrend = lower highs and lower lows. Everything else is chop.','The 9 and 20 EMA are shortcuts: 9 above 20 and both rising = uptrend. Tangled and flat = chop. Your Trend Pullback setup only exists in a clear trend.'],task:'Check the Battlefield on 3 coins. Label each: uptrend, downtrend, or chop.'},
+ {t:'Volume tells the truth',b:['Price can lie, volume rarely does. A breakout on weak volume often fails. A move on big volume means real money is behind it.','Watch for volume spikes at levels: that\'s where the real fight is.'],task:'In replay, find one breakout that failed. Was volume low?'},
+ {t:'VWAP: the day\'s fair price',b:['VWAP is the average price everyone paid today, weighted by volume. Big funds benchmark against it.','Above VWAP = buyers in control of the day. Below = sellers. The cyan dashed line on your chart is VWAP.'],task:'Note how many times BTC crossed VWAP today. More than 5 = chop day.'},
+ {t:'Reversal candles',b:['Hammer, shooting star, and engulfing candles signal a possible turn, but only at a level and only after a move.','They\'re a heads-up, not an entry. Wait for the next candle to confirm.'],task:'Study the cheat sheet, then find one real hammer at support in replay.'},
+ {t:'Indecision candles',b:['Dojis and inside bars mean the fight is even. That\'s a pause, not a signal.','After indecision, the break of that candle\'s high or low often shows who won.'],task:'Spot 2 dojis in replay. What happened after each?'},
+ {t:'Setup 1: Trend Pullback',b:['Your bread and butter. In a clear trend, wait for price to pull back to the 20 EMA, then enter when it closes back past the 9.','Stop goes past the pullback\'s swing. Target 2R. If the EMAs are tangled, the setup doesn\'t exist.'],task:'Paper trade ONLY this setup for your first 20 trades.'},
+ {t:'Setup 2: VWAP Reclaim',b:['After price spends time on one side of VWAP, a close back across it on real volume often starts a move.','Skip it on chop days where VWAP gets crossed constantly.'],task:'Read the VWAP Reclaim card in Setups. Paper trade it only after 20 pullback trades.'},
+ {t:'Setup 3: Morning Range Break',b:['9:30 to 10:30 ET is the most active hour. Its high and low form a box; a close outside it with volume often runs.','Stop at the middle of the range. If the range is huge, the stop is too far: skip it.'],task:'Watch one morning range form on a stock (live or replay). No trade, just watch.'},
+ {t:'Position sizing & R',b:['R = what you risk on a trade. If you buy at 100 with a stop at 98, 1R = $2 per share.','Size = (account × risk %) ÷ distance to stop. Tight stop = bigger size, wide stop = smaller size. Your risk in dollars stays the same. The Gate does this math for you.'],task:'In the Gate, try "Fill it in for me" on 3 coins. Notice how size changes with stop distance.'},
+ {t:'The journal is the edge',b:['Expectancy = (win rate × average win) − (loss rate × average loss), measured in R. Positive expectancy over 50+ trades is the only proof a setup works for you.','You can win 40% of trades and still make money if winners are 2R and losers are 1R.'],task:'Write a lesson note on every closed trade this week, even the boring ones.'},
+ {t:'Tilt & revenge trading',b:['After a loss, the brain wants to win it back immediately. That\'s how one bad trade becomes a blown account.','Your daily loss limit locks the Gate for a reason. When it locks, you\'re done. Close the app and go do literally anything else.'],task:'Write your personal "I\'m tilted" signs in tomorrow\'s plan.'},
+ {t:'Going live the right way',b:['Real money changes your brain. Start at the smallest size your broker allows, even if paper was great.','Place orders in your broker, log them here. Keep the same rules. If real results diverge from paper, go back to paper and figure out why.'],task:'Check your Graduation progress. What\'s the next milestone?'}
+];
+
+const PATTERNS=[
+ {n:'Hammer',tag:'bullish at support',c:[[80,82,66,68],[68,70,54,56],[56,58,44,46],[44,50,12,48,1]],m:'Sellers shoved it down hard, buyers slammed it back up. Long lower wick, small body up top.'},
+ {n:'Shooting Star',tag:'bearish at resistance',c:[[20,34,18,32],[32,46,30,44],[44,58,42,56],[56,92,53,53.5,1]],m:'Buyers reached for the sky, sellers rejected it. Long upper wick, small body at the bottom.'},
+ {n:'Bullish Engulfing',tag:'bullish',c:[[70,72,58,60],[60,62,46,48],[48,50,40,42,1],[40,56,38,54,1]],m:'A cyan (up) body completely swallows the pink (down) one before it. Buyers took over.'},
+ {n:'Bearish Engulfing',tag:'bearish',c:[[30,44,28,42],[42,56,40,54],[54,62,52,60,1],[62,64,46,48,1]],m:'A pink (down) body swallows the cyan (up) one before it. Sellers took over.'},
+ {n:'Doji',tag:'indecision',c:[[40,54,38,52],[52,64,50,62],[62,74,50,62.6,1]],m:'Opened and closed at basically the same price. Nobody won. Watch which way it breaks.'},
+ {n:'Inside Bar',tag:'coiling',c:[[30,72,26,68,1],[62,66,40,48,1]],m:'The whole candle fits inside the one before it. Energy building, breakout coming.'},
+ {n:'Marubozu',tag:'conviction',c:[[40,43,38,41],[41,86,41,86,1]],m:'All body, no wicks. One side was in total control the whole candle.'}
+];
+
+/* ================== STATE ================== */
+const DEF={settings:{paperStart:10000,realStart:500,riskPct:1,dailyLossPct:3,maxTrades:4,minRR:1.5,stocks:['F','TSLA','AMD','NVDA','SOFI'],finnhub:'',sound:true,kLossCap:20,kMaxBets:6},calls:{len:15,sym:'BTC-USD',rounds:{},hist:[],ungraded:[]},kbets:[],kbet:null,kline:{},
+  mode:'paper',trades:[],override:false,ritual:{},plans:{},drill:{right:0,total:0,byDay:{}},lessons:{},seen:{},sel:'BTC-USD',tf:300,jMode:'paper'};
+function deepMerge(a,b){for(const k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))deepMerge(a[k],b[k]);else a[k]=b[k];}return a;}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return deepMerge(JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('Couldn\'t save. Export a backup!');}}
+
+const M={c5:{},stats:{},px:{},chart:[],det:[],quotes:{},feedOk:0,feedErr:0,lastScan:0};
+
+/* ================== MATH ================== */
+function ema(a,n){const k=2/(n+1);let prev;return a.map((v,i)=>(prev=i===0?v:v*k+prev*(1-k)));}
+function rsiArr(c,n=14){const out=Array(c.length).fill(50);let g=0,l=0;for(let i=1;i<c.length;i++){const d=c[i]-c[i-1],up=Math.max(d,0),dn=Math.max(-d,0);if(i<=n){g+=up;l+=dn;if(i===n){g/=n;l/=n;out[i]=l===0?100:100-100/(1+g/l);}}else{g=(g*(n-1)+up)/n;l=(l*(n-1)+dn)/n;out[i]=l===0?100:100-100/(1+g/l);}}return out;}
+function atrArr(cs,n=14){const tr=cs.map((c,i)=>i?Math.max(c.h-c.l,Math.abs(c.h-cs[i-1].c),Math.abs(c.l-cs[i-1].c)):c.h-c.l);return ema(tr,n);}
+function vwapArr(cs){let pv=0,v=0,day=null;return cs.map(c=>{const d=new Date(c.t).toISOString().slice(0,10);if(d!==day){day=d;pv=0;v=0;}pv+=((c.h+c.l+c.c)/3)*c.v;v+=c.v;return v?pv/v:c.c;});}
+function orRange(cs,refT){const d=et(refT).date;const r=cs.filter(x=>{const z=et(x.t);return z.date===d&&z.mins>=570&&z.mins<630;});if(r.length<6)return null;return{hi:Math.max(...r.map(x=>x.h)),lo:Math.min(...r.map(x=>x.l)),t0:r[0].t,t1:r[r.length-1].t};}
+
+function detect(sym,cs){
+  const n=cs.length;if(n<60)return[];
+  const i=n-2,k=cs[i],C=cs.map(x=>x.c);
+  const e9=ema(C,9),e20=ema(C,20),e50=ema(C,50),vw=vwapArr(cs);
+  const avgV=avg(cs.slice(i-20,i).map(x=>x.v));
+  const lowN=(a,b)=>Math.min(...cs.slice(a,b+1).map(x=>x.l)),highN=(a,b)=>Math.max(...cs.slice(a,b+1).map(x=>x.h));
+  const out=[];
+  const mk=(setup,dir,stop,note)=>{const entry=k.c,risk=Math.abs(entry-stop);if(!(risk>0)||risk/entry>0.03)return;
+    out.push({id:`${sym}|${setup}|${dir}|${k.t}`,sym,setup,dir,entry,stop,target:dir==='LONG'?entry+2*risk:entry-2*risk,t:k.t,note});};
+  if(e9[i]>e20[i]&&e20[i]>e50[i]&&Math.min(k.l,cs[i-1].l)<=e20[i]*1.0008&&k.c>e9[i]&&k.c>k.o)
+    mk('pullback','LONG',lowN(i-4,i)*0.9995,'Uptrend, dipped to the 20 EMA, closed back over the 9.');
+  if(e9[i]<e20[i]&&e20[i]<e50[i]&&Math.max(k.h,cs[i-1].h)>=e20[i]*0.9992&&k.c<e9[i]&&k.c<k.o)
+    mk('pullback','SHORT',highN(i-4,i)*1.0005,'Downtrend, popped up to the 20 EMA, closed back under the 9.');
+  const below=[1,2,3].every(j=>cs[i-j].c<vw[i-j]),above=[1,2,3].every(j=>cs[i-j].c>vw[i-j]);
+  if(below&&k.c>vw[i]&&k.v>1.2*avgV)mk('vwap','LONG',lowN(i-3,i)*0.9995,'Stuck under VWAP, then reclaimed it on real volume.');
+  if(above&&k.c<vw[i]&&k.v>1.2*avgV)mk('vwap','SHORT',highN(i-3,i)*1.0005,'Holding VWAP, then lost it on real volume.');
+  const e=et(k.t);
+  if(e.mins>=630&&e.mins<960){const r=orRange(cs,k.t);if(r){const mid=(r.hi+r.lo)/2;
+    if(k.c>r.hi&&cs[i-1].c<=r.hi&&k.v>avgV)mk('orb','LONG',mid,'Closed above the 9:30 to 10:30 range high with volume.');
+    if(k.c<r.lo&&cs[i-1].c>=r.lo&&k.v>avgV)mk('orb','SHORT',mid,'Closed below the 9:30 to 10:30 range low with volume.');}}
+  return out;
+}
+
+function readSpellbook(cs){
+  if(!cs||cs.length<60)return null;
+  const C=cs.map(x=>x.c),n=cs.length-1,px=C[n];
+  const e9=ema(C,9),e20=ema(C,20),e50=ema(C,50),vw=vwapArr(cs),r=rsiArr(C);
+  const macd=ema(C,12).map((v,i)=>v-ema(C,26)[i]);const sig=ema(macd,9);const hist=macd[n]-sig[n];
+  const last=cs.slice(-20);let bv=0,sv=0;last.forEach(c=>{if(c.c>=c.o)bv+=c.v;else sv+=c.v;});
+  const buyPct=bv+sv?bv/(bv+sv)*100:50;
+  const sigs=[
+    ['Trend',e9[n]>e20[n]?1:-1,e9[n]>e20[n]?'9 EMA over 20':'9 EMA under 20'],
+    ['Big trend',px>e50[n]?1:-1,px>e50[n]?'above 50 EMA':'below 50 EMA'],
+    ['VWAP',px>vw[n]?1:-1,px>vw[n]?'above VWAP':'below VWAP'],
+    ['RSI',r[n]>55?1:r[n]<45?-1:0,'RSI '+r[n].toFixed(0)],
+    ['MACD',hist>0?1:-1,hist>0?'MACD rising':'MACD falling'],
+    ['Volume',buyPct>55?1:buyPct<45?-1:0,'buyers '+buyPct.toFixed(0)+'%']
+  ];
+  const score=sigs.reduce((a,s)=>a+s[1],0);
+  const atrP=atrArr(cs)[n]/px*100;
+  const conf=Math.round(50+Math.abs(score)/6*40);
+  let risk=atrP>0.6?'HIGH':atrP>0.25?'MED':'LOW';if(Math.abs(score)<=1)risk='HIGH';
+  return{dir:score>=0?'UP':'DOWN',score,conf,risk,sigs,buyPct,atrP,px};
+}
+
+/* ================== ACCOUNT ================== */
+const closedT=m=>S.trades.filter(t=>t.status==='closed'&&(!m||t.mode===m));
+const openT=m=>S.trades.filter(t=>t.status==='open'&&(!m||t.mode===m));
+const equity=m=>(m==='real'?S.settings.realStart:S.settings.paperStart)+closedT(m).reduce((a,t)=>a+t.pnl,0);
+const todayPnl=m=>closedT(m).filter(t=>et(t.closedAt).date===today()).reduce((a,t)=>a+t.pnl,0);
+const tradesToday=m=>S.trades.filter(t=>t.mode===m&&et(t.openedAt).date===today()).length;
+const dayStartEq=m=>equity(m)-todayPnl(m);
+const lossCap=m=>dayStartEq(m)*S.settings.dailyLossPct/100;
+const locked=m=>todayPnl(m)<=-lossCap(m);
+function stats(list){const n=list.length,w=list.filter(t=>t.pnl>0),l=list.filter(t=>t.pnl<=0);
+  return{n,wr:n?w.length/n:0,aw:avg(w.map(t=>t.r)),al:avg(l.map(t=>t.r)),exp:n?avg(list.map(t=>t.r)):0,pnl:list.reduce((a,t)=>a+t.pnl,0)};}
+function grad(){const out={};for(const k in SETUPS){const l=closedT('paper').filter(t=>t.setup===k);const s=stats(l);
+  const days=l.length?(Math.max(...l.map(t=>t.closedAt))-Math.min(...l.map(t=>t.openedAt)))/864e5:0;
+  out[k]={...s,days,ok:s.n>=50&&s.exp>0&&days>=30};}return out;}
+const realUnlocked=()=>S.override||Object.values(grad()).some(g=>g.ok);
+const livePx=s=>isCrypto(s)?M.px[s]:(M.quotes[s]&&M.quotes[s].c);
+
+/* ================== UI UTILS ================== */
+let toastT;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),3200);}
+function modal(html){$('#modalCard').innerHTML=html;$('#modal').classList.add('on');}
+function closeModal(){$('#modal').classList.remove('on');}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+let AC;function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function tone(f,st,d,type='triangle',vol=.12){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;
+  const t0=a.currentTime+st;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.05);}
+function sfx(k){if(!S.settings.sound)return;
+  if(k==='setup')[880,1175,1568,2093].forEach((f,i)=>tone(f,i*.08,.4));
+  else if(k==='lock'){tone(147,0,.7,'sawtooth',.05);tone(220,.06,.7,'triangle',.09);tone(330,.12,.7,'triangle',.07);}
+  else if(k==='win')[659,880,1319].forEach((f,i)=>tone(f,i*.07,.3));
+  else if(k==='warn'){tone(520,0,.18,'square',.05);tone(390,.2,.25,'square',.05);}
+  else if(k==='flip'){tone(740,0,.12,'sine',.06);tone(554,.1,.16,'sine',.06);}
+  else if(k==='decide')[988,988,1319].forEach((f,i)=>tone(f,i*.14,.14,'square',.04));
+  else tone(660,0,.12,'triangle',.07);}
+document.addEventListener('pointerdown',()=>ac(),{once:true});
+function notify(title,body){try{if('Notification'in window&&Notification.permission==='granted')new Notification(title,{body});}catch(e){}}
+
+/* ================== CHART ================== */
+function drawChart(cv,cs,o={}){
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W||!H)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  if(!cs||cs.length<2){x.fillStyle='#A79CC4';x.font='14px Space Grotesk';x.fillText(o.empty||'Waiting on live data…',12,H/2);return;}
+  const show=o.count||64,start=Math.max(0,cs.length-show),view=cs.slice(start);
+  const padR=64,padT=12,padB=16,cw=(W-padR)/view.length;
+  const vis=view.filter((c,i)=>o.hideFrom==null||start+i<=o.hideFrom||o.reveal);
+  let hi=Math.max(...vis.map(c=>c.h)),lo=Math.min(...vis.map(c=>c.l));
+  (o.lines||[]).forEach(l=>{if(isFinite(l.y)){hi=Math.max(hi,l.y);lo=Math.min(lo,l.y);}});
+  const pd=(hi-lo)*.07||hi*.001;hi+=pd;lo-=pd;
+  const Y=v=>padT+(hi-v)/(hi-lo)*(H-padT-padB);
+  x.font='10px "Space Mono", monospace';x.lineWidth=1;
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,y=Y(v);x.strokeStyle='rgba(193,153,237,.09)';x.beginPath();x.moveTo(0,y);x.lineTo(W-padR,y);x.stroke();x.fillStyle='#A79CC4';x.fillText(fmt(v),W-padR+5,y+3);}
+  if(o.range){const xs=view.findIndex(c=>c.t>=o.range.t0),xe=view.findIndex(c=>c.t>o.range.t1);if(xs>=0){const x1=xs*cw,x2=(xe<0?view.length:xe)*cw;x.fillStyle='rgba(193,153,237,.10)';x.fillRect(x1,Y(o.range.hi),x2-x1,Y(o.range.lo)-Y(o.range.hi));x.strokeStyle='rgba(193,153,237,.5)';x.setLineDash([2,3]);x.strokeRect(x1,Y(o.range.hi),W-padR-x1,Y(o.range.lo)-Y(o.range.hi));x.setLineDash([]);}}
+  const vmax=Math.max(...view.map(c=>c.v))||1;
+  view.forEach((c,i)=>{if(o.hideFrom!=null&&start+i>o.hideFrom&&!o.reveal)return;const h=c.v/vmax*H*.16;x.fillStyle=c.c>=c.o?'rgba(54,237,255,.18)':'rgba(233,9,124,.2)';x.fillRect(i*cw+1,H-padB-h,Math.max(1,cw-2),h);});
+  const ov=(arr,col,dash,w=1.6)=>{if(!arr)return;x.strokeStyle=col;x.lineWidth=w;x.setLineDash(dash||[]);x.beginPath();let first=true;arr.slice(start).forEach((v,i)=>{if(o.hideFrom!=null&&start+i>o.hideFrom&&!o.reveal)return;const px=i*cw+cw/2,py=Y(v);first?x.moveTo(px,py):x.lineTo(px,py);first=false;});x.stroke();x.setLineDash([]);};
+  ov(o.vwap,'#36EDFF',[5,4]);ov(o.e20,'#C199ED');ov(o.e9,'#FF89E6');
+  view.forEach((c,i)=>{const gi=start+i;const future=o.hideFrom!=null&&gi>o.hideFrom;if(future&&!o.reveal)return;
+    const up=c.c>=c.o,col=up?'#36EDFF':'#E9097C',cx=i*cw+cw/2,bw=Math.max(1.5,cw*.62);
+    x.globalAlpha=future?.6:1;x.strokeStyle=col;x.lineWidth=1.2;x.beginPath();x.moveTo(cx,Y(c.h));x.lineTo(cx,Y(c.l));x.stroke();
+    const bt=Y(Math.max(c.o,c.c)),bh=Math.max(1.2,Y(Math.min(c.o,c.c))-bt);x.fillStyle=col;x.fillRect(cx-bw/2,bt,bw,bh);
+    if(future){x.strokeStyle='#fff';x.lineWidth=1;x.strokeRect(cx-bw/2,bt,bw,bh);}x.globalAlpha=1;});
+  if(o.hideFrom!=null&&!o.reveal){const i=o.hideFrom-start;const px=(i+1)*cw;x.fillStyle='rgba(255,137,230,.08)';x.fillRect(px,0,W-padR-px,H);x.fillStyle='#FF89E6';x.font='bold 13px "Space Grotesk"';x.fillText('?',px+(W-padR-px)/2-4,H/2);}
+  (o.marks||[]).forEach(m=>{const i=view.findIndex(c=>c.t===m.t);if(i<0)return;const cx=i*cw+cw/2,long=m.dir==='LONG';const c=view[i];const y=long?Y(c.l)+10:Y(c.h)-10;
+    x.fillStyle='#A3FF67';x.strokeStyle='#000';x.lineWidth=1.5;x.beginPath();if(long){x.moveTo(cx,y-5);x.lineTo(cx-6,y+6);x.lineTo(cx+6,y+6);}else{x.moveTo(cx,y+5);x.lineTo(cx-6,y-6);x.lineTo(cx+6,y-6);}x.closePath();x.fill();x.stroke();});
+  (o.lines||[]).forEach(l=>{if(!isFinite(l.y))return;const y=Y(l.y);x.strokeStyle=l.c;x.lineWidth=1.3;x.setLineDash(l.dash||[6,4]);x.beginPath();x.moveTo(0,y);x.lineTo(W-padR,y);x.stroke();x.setLineDash([]);
+    x.fillStyle=l.c;x.fillRect(W-padR,y-8,padR,16);x.fillStyle='#141414';x.font='bold 9px "Space Mono", monospace';x.fillText((l.label||'')+' '+fmt(l.y),W-padR+3,y+3);});
+  if(o.live){const lc=cs[cs.length-1];const y=Y(lc.c);x.fillStyle=lc.c>=lc.o?'#36EDFF':'#E9097C';x.fillRect(W-padR,y-9,padR,18);x.fillStyle='#141414';x.font='bold 10px "Space Mono", monospace';x.fillText(fmt(lc.c),W-padR+4,y+4);}
+}
+
+/* ================== DATA ================== */
+async function j(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function getCandles(p,g){const d=await j(`${API}/products/${p}/candles?granularity=${g}`);if(!Array.isArray(d))throw new Error('bad');
+  return d.map(a=>({t:a[0]*1000,l:+a[1],h:+a[2],o:+a[3],c:+a[4],v:+a[5]})).sort((a,b)=>a.t-b.t);}
+function feedStatus(){const ok=Date.now()-M.feedOk<90000,bad=M.feedErr>M.feedOk;
+  $('#feedDot').className='dot '+(ok&&!bad?'ok':bad?'bad':'');
+  $('#feedTxt').textContent=ok&&!bad?'live · coinbase':bad?'feed down, retrying':'connecting…';renderNext();}
+
+async function scan(){
+  for(const p of CRYPTO){
+    try{const cs=await getCandles(p,300);M.c5[p]=cs;M.feedOk=Date.now();M.px[p]=M.px[p]||cs[cs.length-1].c;
+      try{M.stats[p]=await j(`${API}/products/${p}/stats`);}catch(e){}
+      detect(p,cs).forEach(d=>{if(!M.det.find(x=>x.id===d.id))M.det.unshift(d);if(!S.seen[d.id]){S.seen[d.id]=d.t;fireAlert(d);}});
+    }catch(e){M.feedErr=Date.now();}
+    await sleep(220);
+  }
+  const cut=Date.now()-15*60000;M.det=M.det.filter(d=>d.t>cut-300000);
+  const dayAgo=Date.now()-864e5;for(const k in S.seen)if(S.seen[k]<dayAgo)delete S.seen[k];
+  M.lastScan=Date.now();save();feedStatus();renderNext();renderLive();renderWatch();renderConditions();renderDetFeed();
+  if(S.tf===300)loadChart(true);
+}
+function fireAlert(d){sfx('setup');const s=SETUPS[d.setup];toast(`⚡ ${short(d.sym)} ${s.name} (${dl(d.dir)})`);notify(`${short(d.sym)}: ${s.name} (${d.dir})`,d.note);}
+
+async function loadChart(fromScan){
+  try{const cs=(S.tf===300&&M.c5[S.sel])?M.c5[S.sel]:await getCandles(S.sel,S.tf);M.chart=cs.map(c=>({...c}));M.feedOk=Date.now();
+    if(M.px[S.sel])applyLive(M.px[S.sel]);}catch(e){M.feedErr=Date.now();}
+  feedStatus();renderChart();
+}
+function applyLive(px){const cs=M.chart;if(!cs.length)return;const l=cs[cs.length-1];l.c=px;l.h=Math.max(l.h,px);l.l=Math.min(l.l,px);}
+async function pollPrices(){
+  const syms=new Set([...CRYPTO,S.sel,...openT().filter(t=>isCrypto(t.sym)).map(t=>t.sym)]);
+  for(const p of syms){try{const d=await j(`${API}/products/${p}/ticker`);M.px[p]=+d.price;M.feedOk=Date.now();}catch(e){M.feedErr=Date.now();}}
+  if(M.px[S.sel])applyLive(M.px[S.sel]);
+  feedStatus();renderChart(true);checkOpenAlerts();renderOpenLive();
+}
+async function pollStocks(){
+  if(!S.settings.finnhub){renderStocks();return;}
+  for(const s of S.settings.stocks){try{const q=await j(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(s)}&token=${encodeURIComponent(S.settings.finnhub)}`);if(q&&q.c)M.quotes[s]=q;}catch(e){}await sleep(150);}
+  renderStocks();renderOpenLive();
+}
+function checkOpenAlerts(){let ch=false;openT().forEach(t=>{const p=livePx(t.sym);if(!isFinite(p))return;const L=t.dir==='LONG';
+  if(!t.hitStop&&(L?p<=t.stop:p>=t.stop)){t.hitStop=1;ch=true;sfx('warn');toast(`🛑 ${short(t.sym)} hit your stop. Close it, log it, no hoping.`);notify(`${short(t.sym)} hit stop`,'Close it in your broker and log it.');}
+  if(!t.hitTarget&&(L?p>=t.target:p<=t.target)){t.hitTarget=1;ch=true;sfx('win');toast(`✨ ${short(t.sym)} hit target! Take it.`);notify(`${short(t.sym)} hit target`,'Take profit and log it.');}});if(ch)save();}
+
+/* ================== RENDER: TODAY ================== */
+function stripHTML(){const m=S.mode,tp=todayPnl(m),cap=lossCap(m),used=Math.min(100,Math.max(0,-tp/cap*100));
+  return `<div class="stat"><div class="k">${m==='paper'?'Paper':'Real'} account <button class="q" onclick="gl('paper')" style="width:15px;height:15px;font-size:9px;color:var(--dim)">?</button></div><div class="v">${money(equity(m))}</div></div>
+  <div class="stat"><div class="k">Today P/L</div><div class="v ${tp>=0?'pos':'neg'}">${money(tp)}</div><div class="meter"><i style="width:${used}%"></i></div></div>
+  <div class="stat"><div class="k">Trades today</div><div class="v">${tradesToday(m)} / ${S.settings.maxTrades}</div><div class="muted small" style="font-size:10px">loss cap ${money(cap)}</div></div>`;}
+function lockHTML(){if(!locked(S.mode))return'';return `<div class="banner"><span class="anton">🔒 Done for today, babe</span>You hit your daily loss limit. The Gate is locked until tomorrow. Close the app, go touch grass. Revenge trades are how accounts die.</div>`;}
+function renderStatus(){$('#strip').innerHTML=stripHTML();$('#strip2').innerHTML=stripHTML();$('#lockBanner').innerHTML=lockHTML();$('#lockBanner2').innerHTML=lockHTML();
+  const b=$('#modeBtn');b.className='modebtn '+S.mode;b.textContent=S.mode==='paper'?'📝 Paper':(realUnlocked()?'💸 Real':'💸 Real');}
+
+function renderLive(){
+  const el=$('#liveSetups');$('#scanTag').textContent=M.lastScan?'scanned '+timeStr(M.lastScan):'scanning';
+  const act=M.det.filter(d=>Date.now()-d.t<15*60000);
+  if(!act.length){el.innerHTML=`<div class="empty">Nothing on your setups right now.<br><b>Waiting IS the job.</b> 🕯 You'll hear a sparkle when one fires.</div>`;return;}
+  el.innerHTML=act.map(d=>{const s=SETUPS[d.setup];return `<div class="setupalert ${d.dir==='SHORT'?'short':''}">
+    <div class="row"><span class="anton" style="font-size:20px">${s.icon} ${short(d.sym)}</span><span class="sticker ${d.dir==='LONG'?'pool':'pk'}">${dl(d.dir)}</span><div class="sp"></div><span class="muted small">${timeStr(d.t)}</span></div>
+    <div class="muted small" style="margin-top:4px"><b style="color:var(--bubble)">${s.name}:</b> ${esc(d.note)}</div>
+    <div class="lvls"><div class="lvl"><div class="k">Entry</div><div class="v">${fmt(d.entry)}</div></div><div class="lvl"><div class="k">Bail out</div><div class="v neg">${fmt(d.stop)}</div></div><div class="lvl"><div class="k">Take profit</div><div class="v pos">${fmt(d.target)}</div></div></div>
+    <div class="row"><button class="btn sm" onclick="toGate('${d.id}')">Run it through the Gate</button><button class="btn sm ghost" onclick="viewSym('${d.sym}')">Chart</button></div></div>`;}).join('');
+}
+
+const HYPE={UP:['Buyers are running this block right now. Still: only your setups count.','Bulls have the wheel. Context, not a trade. Wait for your entry.','Green energy, but chasing is how you get wrecked. Let it come to you.'],
+  DOWN:['Sellers are in charge. Don\'t try to catch a falling knife.','Bears holding the line. If you\'re long-only today, just watch.','Red pressure. The best trade might be no trade.'],
+  FLIP:['This is a coin flip. Sit on your hands, it\'s free.','Mixed signals everywhere. Chop eats accounts. Pass.']};
+let lastDir=null;
+function renderChart(light){
+  $('#symChips').innerHTML=CRYPTO.map(p=>`<button class="chip ${p===S.sel?'on':''}" onclick="viewSym('${p}')">${short(p)}</button>`).join('');
+  $('#tfChips').innerHTML=[[60,'1m'],[300,'5m'],[900,'15m']].map(([g,l])=>`<button class="chip ${g===S.tf?'on':''}" onclick="setTf(${g})">${l}</button>`).join('');
+  const cs=M.chart;$('#bigPx').textContent=cs.length?fmt(cs[cs.length-1].c):'—';
+  const C=cs.map(c=>c.c);const lines=[];
+  openT().filter(t=>t.sym===S.sel).forEach(t=>{lines.push({y:t.entry,c:'#FF89E6',label:'IN'},{y:t.stop,c:'#E9097C',label:'SL'},{y:t.target,c:'#36EDFF',label:'TP'});});
+  drawChart($('#chart'),cs,{e9:cs.length?ema(C,9):null,e20:cs.length?ema(C,20):null,vwap:cs.length?vwapArr(cs):null,live:true,lines,
+    range:S.tf<=300&&cs.length?orRange(cs,Date.now()):null,marks:M.det.filter(d=>d.sym===S.sel)});
+  const r=readSpellbook(cs);const v=$('#verdict');
+  if(!r){v.innerHTML=`<div class="lbl">⚔ The Verdict</div><div class="muted" style="margin-top:8px">Waiting on live candles…</div>`;return;}
+  const col=r.dir==='UP'?'var(--pool)':'var(--scream)';v.style.setProperty('--vc',col);
+  if(lastDir&&lastDir!==r.dir&&!light)sfx('tick');lastDir=r.dir;
+  const pool=Math.abs(r.score)<=1?HYPE.FLIP:HYPE[r.dir];const hype=pool[Math.floor(Date.now()/60000)%pool.length];
+  v.innerHTML=`<div class="row"><span class="lbl">⚔ The Verdict · ${short(S.sel)} · ${S.tf/60}m</span><div class="sp"></div><span class="sticker ${r.risk==='HIGH'?'pk':r.risk==='MED'?'lav':'pool'}">risk ${r.risk}</span></div>
+    <div class="row" style="align-items:flex-end;gap:12px"><div class="big">${r.dir}</div><div class="anton" style="font-size:24px;color:${col};padding-bottom:6px">${r.conf}%</div></div>
+    <div class="meta">${r.sigs.map(s=>`<span class="sticker ${s[1]>0?'pool':s[1]<0?'pk':'ink'}" style="transform:none;font-size:10px">${esc(s[2])}</span>`).join('')}</div>
+    <div class="hype">${hype}</div>
+    <div class="muted small" style="margin-top:6px">This is context, not a trade signal. Trades only come from your setups + the Gate.</div>`;
+  const b=r.buyPct;$('#bfB').style.width=b+'%';$('#bfSw').style.left=b+'%';$('#bfBl').textContent=`Buyers ${b.toFixed(0)}%`;$('#bfSl').textContent=`Sellers ${(100-b).toFixed(0)}%`;
+  $('#bfChip').textContent=b>55?'bulls winning':b<45?'bears winning':'dead even';
+}
+function viewSym(p){S.sel=p;save();tab('today');M.chart=[];renderChart();loadChart();renderWatch();window.scrollTo({top:$('#chart').getBoundingClientRect().top+scrollY-160,behavior:'smooth'});}
+function setTf(g){S.tf=g;save();M.chart=[];renderChart();loadChart();}
+
+function renderWatch(){
+  $('#cryptoGrid').innerHTML=CRYPTO.map(p=>{const st=M.stats[p];const px=M.px[p]||(M.c5[p]&&M.c5[p][M.c5[p].length-1].c);
+    const ch=st&&+st.open?((px||+st.last)-st.open)/st.open*100:NaN;const d=M.det.find(x=>x.sym===p);
+    return `<button class="wcard ${p===S.sel?'sel':''}" onclick="viewSym('${p}')"><div class="row"><span class="sym">${short(p)}</span><div class="sp"></div>${d?`<span class="sticker" style="font-size:9px">${SETUPS[d.setup].icon} setup</span>`:''}</div>
+      <div class="px">${fmt(px)}</div><div class="ch ${ch>=0?'pos':'neg'}">${pct(ch)} 24h</div></button>`;}).join('');
+}
+function mktState(){const e=et(Date.now());const wk=!['Sat','Sun'].includes(e.wd);if(!wk)return['WEEKEND','closed'];
+  if(e.mins>=570&&e.mins<960)return['OPEN','open'];if(e.mins>=240&&e.mins<570)return['PRE-MKT','pre'];if(e.mins>=960&&e.mins<1200)return['AFTER HRS','after'];return['CLOSED','closed'];}
+function renderStocks(){
+  $('#mktTag').textContent=mktState()[0];
+  const el=$('#stockList');
+  if(!S.settings.finnhub){el.innerHTML=`<div class="muted">Add a free Finnhub key in <b>Rules</b> to see live stock quotes. Until then, tap to open each chart on TradingView.</div>`+S.settings.stocks.map(s=>`<div class="srow"><span class="sym">${esc(s)}</span><div class="sp"></div><a class="btn sm lav" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.tradingview.com/chart/?symbol=${encodeURIComponent(s)}">Chart ↗</a><button class="btn sm" onclick="gateSym('${esc(s)}')">Plan</button></div>`).join('');return;}
+  el.innerHTML=S.settings.stocks.map(s=>{const q=M.quotes[s];return `<div class="srow"><span class="sym">${esc(s)}</span><div><div class="mono" style="font-weight:700">${q?fmt(q.c):'—'}</div><div class="mono small ${q&&q.dp>=0?'pos':'neg'}">${q?pct(q.dp):'loading'}</div></div><div class="sp"></div>
+    <a class="btn sm lav" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.tradingview.com/chart/?symbol=${encodeURIComponent(s)}">Chart ↗</a><button class="btn sm" onclick="gateSym('${esc(s)}')">Plan</button></div>`;}).join('');
+}
+function renderConditions(){
+  const cs=M.c5['BTC-USD'];const [ms]=mktState();const e=et(Date.now());
+  let html='';
+  if(cs&&cs.length>100){const at=atrArr(cs);const n=cs.length-1;const nowA=at[n]/cs[n].c,avgA=avg(at.map((a,i)=>a/cs[i].c));
+    const vNow=avg(cs.slice(-12).map(c=>c.v)),vAvg=avg(cs.map(c=>c.v));const a=nowA/avgA,v=vNow/vAvg;
+    const st=a>1.05&&v>1?['🔥 MOVING','Real volatility and volume. Setups tend to follow through. Still: A+ only.','pool']:a<.8&&v<.85?['😴 CHOP','Low energy, fake moves. Honestly the best trade today might be the replay drill.','pk']:['🌗 MEH','Normal-ish. Be picky, trade only clean setups.','lav'];
+    html+=`<div class="row"><span class="anton" style="font-size:26px">${st[0]}</span><div class="sp"></div><span class="sticker ${st[2]}">crypto</span></div><div class="muted" style="margin:4px 0 10px">${st[1]}</div>
+    <div class="lvls"><div class="lvl"><div class="k">Volatility</div><div class="v">${(a*100).toFixed(0)}%</div></div><div class="lvl"><div class="k">Volume</div><div class="v">${(v*100).toFixed(0)}%</div></div><div class="lvl"><div class="k">vs normal</div><div class="v">${a>1&&v>1?'▲':'▼'}</div></div></div>`;}
+  else html+=`<div class="muted">Reading the room…</div>`;
+  const inW=(a,b)=>e.mins>=a&&e.mins<b&&!['Sat','Sun'].includes(e.wd);
+  html+=`<hr class="torn"><div class="anton" style="font-size:16px;margin-bottom:6px">Best times (ET)</div>
+   <ul class="checks">
+   <li><b>${inW(570,690)?'🟣':'⚪'}</b><span><b>9:30 to 11:30 AM</b>: the power window. Most volume, cleanest moves. ${inW(570,690)?'<span class="sticker pk">now</span>':''}</span></li>
+   <li><b>${inW(690,840)?'🟣':'⚪'}</b><span><b>11:30 AM to 2 PM</b>: lunch chop. Great time to journal instead.</span></li>
+   <li><b>${inW(840,960)?'🟣':'⚪'}</b><span><b>2 to 4 PM</b>: second wind into the close. ${inW(840,960)?'<span class="sticker pk">now</span>':''}</span></li>
+   <li><b>🌙</b><span><b>Evenings</b>: crypto only, and thinner. Perfect for your lesson + replay ritual.</span></li></ul>`;
+  $('#conditions').innerHTML=html;
+}
+
+/* ================== RENDER: GATE ================== */
+let gDir='LONG';
+function fillSetupSelect(){$('#gSetup').innerHTML=`<option value="">Pick your setup…</option>`+Object.entries(SETUPS).map(([k,s])=>`<option value="${k}">${s.icon} ${s.name}</option>`).join('')+`<option value="none">🙈 No setup, just a feeling</option>`;
+  $('#symList').innerHTML=[...CRYPTO,...S.settings.stocks].map(s=>`<option value="${s}">`).join('');}
+function gateVals(){const sym=$('#gSym').value.trim().toUpperCase();return{sym,dir:gDir,setup:$('#gSetup').value,entry:num($('#gEntry').value),stop:num($('#gStop').value),target:num($('#gTarget').value),size:num($('#gSize').value),reason:$('#gReason').value};}
+function maxSafe(f){const rpu=Math.abs(f.entry-f.stop);if(!(rpu>0))return NaN;const budget=equity(S.mode)*S.settings.riskPct/100;const raw=Math.min(budget/rpu,isFinite(f.entry)&&f.entry>0?equity(S.mode)/f.entry:Infinity);return isCrypto(f.sym)?Math.floor(raw*10000)/10000:Math.floor(raw);}
+function renderRules(){const k=$('#gSetup').value;const el=$('#gRules');el.style.display=SETUPS[k]||k==='none'?'':'none';
+  if(k==='none'){el.innerHTML=`<li class="muted">No setup = no trade. Feelings aren't a strategy (yet). Go watch it instead.</li>`;return;}
+  if(!SETUPS[k]){el.innerHTML='';return;}
+  const flip=gDir==='SHORT'?'<li class="small" style="font-weight:700">Going down? Flip these: "above" becomes "below", "up" becomes "down".</li>':'';
+  el.innerHTML=flip+SETUPS[k].plain.map((r,i)=>`<li><input type="checkbox" class="gRule" id="gr${i}"><label for="gr${i}">${esc(r)}<span class="tech">${esc(SETUPS[k].rules[i])}</span></label></li>`).join('');
+  el.querySelectorAll('.gRule').forEach(c=>c.addEventListener('change',renderGate));}
+function gateChecks(f){const L=f.dir==='LONG',rpu=Math.abs(f.entry-f.stop),ratio=Math.abs(f.target-f.entry)/rpu,riskD=rpu*f.size,budget=equity(S.mode)*S.settings.riskPct/100;
+  const rules=[...document.querySelectorAll('.gRule')];
+  return[
+    ['Picked what to trade',!!f.sym,1],
+    ['Picked one of your 3 setups',!!SETUPS[f.setup],2],
+    ['Every setup box is ticked (true on the chart)',rules.length>0&&rules.every(c=>c.checked),2],
+    [L?'Bail-out price is BELOW your entry':'Bail-out price is ABOVE your entry',isFinite(f.entry)&&isFinite(f.stop)&&(L?f.stop<f.entry:f.stop>f.entry),3],
+    [L?'Take-profit is ABOVE your entry':'Take-profit is BELOW your entry',isFinite(f.target)&&isFinite(f.entry)&&(L?f.target>f.entry:f.target<f.entry),3],
+    [`You could win at least ${S.settings.minRR}× what you could lose`,isFinite(ratio)&&ratio>=S.settings.minRR,3],
+    [`If wrong, you lose ${money(budget)} or less (${S.settings.riskPct}% of account)`,isFinite(riskD)&&f.size>0&&riskD<=budget*1.0001,3],
+    [`Costs no more than your account has (${money(equity(S.mode))})`,isFinite(f.entry*f.size)&&f.entry*f.size<=equity(S.mode)*1.0001,3],
+    [`Under your ${S.settings.maxTrades} trades for today`,tradesToday(S.mode)<S.settings.maxTrades,1],
+    ['Haven\'t hit today\'s loss limit',!locked(S.mode),1],
+    [S.mode==='real'?'Real money mode is earned':'Using paper (fake) money',S.mode==='paper'||realUnlocked(),1],
+    ['Wrote a real reason',f.reason.trim().length>=10,4]];}
+let gStep=1,gSizeAuto=true;
+function renderGate(){const f0=gateVals();
+  if(gSizeAuto&&document.activeElement!==$('#gSize')){const m=maxSafe(f0);$('#gSize').value=isFinite(m)&&m>0?m:'';}
+  const f=gateVals();const rpu=Math.abs(f.entry-f.stop);const ratio=Math.abs(f.target-f.entry)/rpu;const riskD=rpu*f.size,rew=Math.abs(f.target-f.entry)*f.size;
+  $('#gCalc').innerHTML=`<div><div class="k">If wrong, you lose</div><div class="v">${isFinite(riskD)?money(riskD):'—'}</div></div><div><div class="k">If right, you make</div><div class="v">${isFinite(rew)?money(rew):'—'}</div></div><div><div class="k">Win vs lose</div><div class="v">${isFinite(ratio)?ratio.toFixed(1)+'×':'—'}</div></div>`;
+  const cost=f.entry*f.size;$('#gSizeHelp').innerHTML=isFinite(cost)&&cost>0?`That's about <b>${money(cost)}</b> worth of ${esc(short(f.sym)||'it')}. ${riskD<equity(S.mode)*S.settings.riskPct/100*0.95&&cost>=equity(S.mode)*0.95?'Capped at your whole account, so a loss here costs a bit less than your usual '+S.settings.riskPct+'%.':'It\'s sized so a loss only costs '+S.settings.riskPct+'% of your account.'}`:'Auto-set so that if you\'re wrong, you only lose '+S.settings.riskPct+'% of your account.';
+  const ch=gateChecks(f);$('#gChecks').innerHTML=ch.map(([l,ok])=>`<li><b>${ok?'✅':'❌'}</b><span style="${ok?'':'font-weight:700'}">${esc(l)}</span></li>`).join('');
+  const all=ch.every(c=>c[1]);$('#gGo').disabled=!all;
+  $('#gNote').textContent=all?(S.mode==='real'?'Real money: place this exact order in your broker app FIRST, then tap Cast to log it here.':'Paper money: nothing real happens. It logs the trade and tracks it live so you can practice.'):'The Cast button unlocks when every line is ✅.';
+  const need=ch.filter(c=>c[2]<=gStep&&c[2]!==4&&!c[1]);const mi=$('#gMissing');
+  if(gStep<4&&need.length){mi.style.display='';mi.innerHTML='<b>To keep going:</b><br>'+need.map(c=>'❌ '+esc(c[0])).join('<br>');}else mi.style.display='none';
+  $('#gNext').disabled=gStep<4&&need.length>0;$('#gNext').style.display=gStep===4?'none':'';$('#gBack').style.visibility=gStep===1?'hidden':'visible';
+  $('#gStepTag').textContent=`step ${gStep} of 4`;document.querySelectorAll('#gDots i').forEach((d,i)=>d.classList.toggle('on',i<gStep));
+  $('#gSymChips').innerHTML=[...CRYPTO,...S.settings.stocks.slice(0,3)].map(s=>`<button class="chip ${f.sym===s?'on':''}" onclick="$('#gSym').value='${s}';renderGate()">${short(s)}</button>`).join('');}
+function showStep(n){gStep=Math.max(1,Math.min(4,n));document.querySelectorAll('.gstep').forEach(s=>s.classList.toggle('on',+s.dataset.s===gStep));renderGate();
+  if(gStep===3&&!$('#gEntry').value)suggestLevels(true);$('#gateCard').scrollIntoView({behavior:'smooth',block:'start'});}
+function suggestLevels(quiet){const f=gateVals();const L=f.dir==='LONG';let p=livePx(f.sym);const cs=M.c5[f.sym];
+  if(!isFinite(p)&&cs)p=cs[cs.length-1].c;
+  if(!isFinite(p)){if(!quiet)toast(isCrypto(f.sym)?'No live price yet, give it a sec':'Stocks need a Finnhub key (Rules tab) for live prices. Type the entry yourself.');return;}
+  let stop;
+  if(cs&&cs.length>20){const rec=cs.slice(-7,-1);const atr=atrArr(cs)[cs.length-1];stop=L?Math.min(...rec.map(c=>c.l))-atr*.2:Math.max(...rec.map(c=>c.h))+atr*.2;
+    const d=Math.abs(p-stop);if(d<atr*.8)stop=L?p-atr*1.2:p+atr*1.2;if(L?stop>=p:stop<=p)stop=L?p-atr*1.2:p+atr*1.2;}
+  else stop=L?p*.99:p*1.01;
+  const r=Math.abs(p-stop);const pr=v=>+v.toPrecision(p>=1000?7:6);
+  $('#gEntry').value=pr(p);$('#gStop').value=pr(stop);$('#gTarget').value=pr(L?p+2*r:p-2*r);gSizeAuto=true;renderGate();
+  if(!quiet)toast('✨ Filled in. The bail-out is just past the recent '+(L?'low':'high')+'.');}
+function showExample(){modal(`<div class="card-h"><h2>🧪 A full example</h2></div>
+  <div style="line-height:1.55;font-size:14px">
+  <p><b>1. What & which way:</b> BTC, Up.</p>
+  <p style="margin-top:8px"><b>2. Setup:</b> Trend Pullback. The chart's been climbing, pink line over purple. Price dipped to the purple line, then the newest candle closed back above pink. All 4 boxes true ✅.</p>
+  <p style="margin-top:8px"><b>3. Prices:</b> Get in at <b>64,000</b>. Bail out at <b>63,800</b> (just under the dip's low). That's a $200 drop per 1 BTC. Take profit at <b>64,400</b>, which is 2× the risk.<br>Your account is $10,000 and you risk 1% = <b>$100</b>. $100 ÷ $200 = buy <b>0.5 BTC</b>. The app does this math.</p>
+  <p style="margin-top:8px"><b>4. Why:</b> "Uptrend, dipped to the purple line and bounced with a strong candle."</p>
+  <p style="margin-top:8px"><b>Then:</b> if it hits 63,800 you lose $100 and log it. If it hits 64,400 you make $200. Win 4 out of 10 like that and you're still up. <i>That</i> is the whole game.</p></div>
+  <button class="btn block" style="margin-top:14px" onclick="closeModal()">Got it</button>`);}
+function resetGate(){['#gSym','#gEntry','#gStop','#gTarget','#gSize','#gReason'].forEach(s=>$(s).value='');$('#gSetup').value='';gSizeAuto=true;setDir('LONG');gStep=1;document.querySelectorAll('.gstep').forEach(s=>s.classList.toggle('on',s.dataset.s==='1'));renderGate();}
+function setDir(d){gDir=d;document.querySelectorAll('#gateCard .dirbtns button').forEach(b=>b.classList.toggle('on',b.dataset.d===d));renderRules();renderGate();}
+function toGate(id){const d=M.det.find(x=>x.id===id);if(!d)return;tab('trade');$('#gSym').value=d.sym;setDir(d.dir);$('#gSetup').value=d.setup;renderRules();
+  $('#gEntry').value=+d.entry.toPrecision(8);$('#gStop').value=+d.stop.toPrecision(8);$('#gTarget').value=+d.target.toPrecision(8);gSizeAuto=true;$('#gReason').value=`${SETUPS[d.setup].name}: ${d.note}`;showStep(2);toast('The scanner spotted it. Now check the boxes with your own eyes.');}
+function gateSym(s){tab('trade');resetGate();$('#gSym').value=s;renderGate();}
+function castTrade(){const f=gateVals();if(!gateChecks(f).every(c=>c[1]))return;
+  if(!f.sym)return;const t={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),mode:S.mode,sym:f.sym,dir:f.dir,setup:f.setup,entry:f.entry,stop:f.stop,target:f.target,size:f.size,reason:f.reason.trim(),openedAt:Date.now(),status:'open'};
+  S.trades.push(t);save();sfx('lock');toast(`🔒 ${short(t.sym)} ${dl(t.dir)} cast. Your bail-out price is sacred.`);resetGate();renderAll();}
+
+function renderOpen(){const list=openT(S.mode);$('#openCount').textContent=list.length;
+  if(!list.length){$('#openTrades').innerHTML=`<div class="empty">No open trades. Cast one through the Gate when a setup fires.</div>`;return;}
+  $('#openTrades').innerHTML=list.map(t=>{const s=SETUPS[t.setup];return `<div class="trade" data-id="${t.id}">
+    <div class="row"><span class="anton" style="font-size:20px">${short(t.sym)}</span><span class="sticker ${t.dir==='LONG'?'pool':'pk'}">${dl(t.dir)}</span><span class="sticker ink">${s?s.icon+' '+s.name:''}</span><div class="sp"></div></div>
+    <div class="lvls"><div class="lvl"><div class="k">Entry</div><div class="v">${fmt(t.entry)}</div></div><div class="lvl"><div class="k">Bail out</div><div class="v neg">${fmt(t.stop)}</div></div><div class="lvl"><div class="k">Take profit</div><div class="v pos">${fmt(t.target)}</div></div></div>
+    <div class="row"><span class="muted small">Now</span><span class="mono" style="font-weight:700" data-live="px">—</span><div class="sp"></div><span class="mono" style="font-weight:700" data-live="pnl">—</span></div>
+    <label class="f">Exit price</label><div class="row"><input class="xPx" inputmode="decimal"><button class="btn sm pk" onclick="fillExit('${t.id}','stop')">@stop</button><button class="btn sm pool" onclick="fillExit('${t.id}','target')">@target</button><button class="btn sm lav" onclick="fillExit('${t.id}','live')">live</button></div>
+    <label class="f">What did this trade teach you?</label><textarea class="xNote" placeholder="Followed the plan? Moved your stop? Felt FOMO?"></textarea>
+    <button class="btn block" style="margin-top:10px" onclick="closeTrade('${t.id}')">Close & log it</button></div>`;}).join('');
+  renderOpenLive();}
+function renderOpenLive(){document.querySelectorAll('#openTrades .trade').forEach(el=>{const t=S.trades.find(x=>x.id===el.dataset.id);if(!t)return;const p=livePx(t.sym);
+  const pe=el.querySelector('[data-live=px]'),pn=el.querySelector('[data-live=pnl]');if(!isFinite(p)){pe.textContent=isCrypto(t.sym)?'—':'add Finnhub key';pn.textContent='';return;}
+  const pnl=(p-t.entry)*t.size*(t.dir==='LONG'?1:-1),r=pnl/(Math.abs(t.entry-t.stop)*t.size);pe.textContent=fmt(p);pn.textContent=`${money(pnl)} · ${rr(r)}`;pn.className='mono '+(pnl>=0?'pos':'neg');});}
+function fillExit(id,k){const t=S.trades.find(x=>x.id===id);const el=document.querySelector(`.trade[data-id="${id}"] .xPx`);const v=k==='stop'?t.stop:k==='target'?t.target:livePx(t.sym);if(isFinite(v))el.value=+(+v).toPrecision(8);}
+function closeTrade(id){const t=S.trades.find(x=>x.id===id);const el=document.querySelector(`.trade[data-id="${id}"]`);const x=num(el.querySelector('.xPx').value);
+  if(!isFinite(x)){toast('Enter your exit price first');return;}const note=el.querySelector('.xNote').value.trim();
+  t.exit=x;t.pnl=(x-t.entry)*t.size*(t.dir==='LONG'?1:-1);t.r=t.pnl/(Math.abs(t.entry-t.stop)*t.size);t.lesson=note;t.closedAt=Date.now();t.status='closed';save();
+  sfx(t.pnl>0?'win':'tick');toast(t.pnl>0?`✨ +${t.r.toFixed(2)}R. Logged.`:`Logged ${t.r.toFixed(2)}R. Losses are tuition.`);
+  if(locked(t.mode)){sfx('warn');setTimeout(()=>toast('🔒 Daily loss limit hit. Done for today.'),1800);}
+  renderAll();}
+
+/* ================== RENDER: JOURNAL ================== */
+function renderJournal(){const m=S.jMode;$('#jMode').innerHTML=['paper','real'].map(x=>`<button class="chip ${x===m?'on':''}" onclick="S.jMode='${x}';save();renderJournal()">${x}</button>`).join('');
+  const list=closedT(m).sort((a,b)=>a.closedAt-b.closedAt);const s=stats(list);
+  $('#jBig').innerHTML=`<div><div class="k">Trades</div><div class="v">${s.n}</div></div><div><div class="k">Win rate</div><div class="v">${s.n?(s.wr*100).toFixed(0)+'%':'—'}</div></div>
+   <div><div class="k">Expectancy <button class="q" onclick="gl('exp')" style="width:16px;height:16px;font-size:10px">?</button></div><div class="v ${s.exp>=0?'pos':'neg'}">${s.n?rr(s.exp):'—'}</div></div><div><div class="k">Total P/L</div><div class="v ${s.pnl>=0?'pos':'neg'}">${money(s.pnl)}</div></div>
+   <div><div class="k">Avg win</div><div class="v pos">${s.aw?rr(s.aw):'—'}</div></div><div><div class="k">Avg loss</div><div class="v neg">${s.al?rr(s.al):'—'}</div></div>`;
+  $('#jExplain').innerHTML=s.n<20?`Under 20 trades, these numbers are mostly noise. Keep logging.`:s.exp>0?`Positive expectancy: on average each trade makes you ${s.exp.toFixed(2)}R. Protect it by NOT changing what works.`:`Negative expectancy so far. Check By Setup: find which one is bleeding and pause it.`;
+  $('#jSetups').innerHTML=`<table class="t"><tr><th>Setup</th><th>#</th><th>Win</th><th>Exp</th><th>P/L</th></tr>`+Object.entries(SETUPS).map(([k,st])=>{const x=stats(list.filter(t=>t.setup===k));return `<tr><td style="font-family:'Space Grotesk';font-weight:700">${st.icon} ${st.name}</td><td>${x.n}</td><td>${x.n?(x.wr*100).toFixed(0)+'%':'—'}</td><td class="${x.exp>=0?'pos':'neg'}">${x.n?rr(x.exp):'—'}</td><td class="${x.pnl>=0?'pos':'neg'}">${x.n?money(x.pnl):'—'}</td></tr>`;}).join('')+`</table>`;
+  drawEquity(list,m);
+  const all=S.trades.filter(t=>t.mode===m).sort((a,b)=>b.openedAt-a.openedAt);
+  $('#jList').innerHTML=all.length?all.map(t=>{const s=SETUPS[t.setup];return `<div class="hist"><div class="row"><span class="anton" style="font-size:17px">${short(t.sym)}</span><span class="sticker ${t.dir==='LONG'?'pool':'pk'}" style="font-size:9px">${dl(t.dir)}</span><span class="muted small">${s?s.name:''}</span><div class="sp"></div>
+    ${t.status==='open'?'<span class="sticker lav">open</span>':`<span class="mono ${t.pnl>=0?'pos':'neg'}" style="font-weight:700">${rr(t.r)}</span>`}</div>
+    <div class="muted small">${dateStr(t.openedAt)} ${timeStr(t.openedAt)} · in ${fmt(t.entry)}${t.exit!=null?' · out '+fmt(t.exit)+' · '+money(t.pnl):''}</div>
+    <div class="small" style="margin-top:4px">📝 ${esc(t.reason)}</div>${t.lesson?`<div class="small" style="margin-top:3px;color:var(--bubble)">🕯 ${esc(t.lesson)}</div>`:''}
+    <button class="btn sm ghost" style="margin-top:6px;font-size:10px;padding:4px 8px" onclick="delTrade('${t.id}')">delete</button></div>`;}).join(''):`<div class="empty">No ${m} trades yet. Your record starts with the first one.</div>`;}
+function drawEquity(list,m){const cv=$('#eqCv');const start=m==='real'?S.settings.realStart:S.settings.paperStart;let eq=start;
+  const pts=[{t:0,c:start,o:start,h:start,l:start,v:0}];list.forEach((t,i)=>{const o=eq;eq+=t.pnl;pts.push({t:i+1,o,c:eq,h:Math.max(o,eq),l:Math.min(o,eq),v:0});});
+  drawChart(cv,pts.length>1?pts:null,{count:500,empty:'Your equity curve shows up after your first closed trade.'});}
+function delTrade(id){modal(`<div class="card-h"><h2>Delete this trade?</h2></div><div class="muted">Only delete typos. Deleting losers to make stats look better just lies to future you.</div><div class="row" style="margin-top:12px"><button class="btn pk" onclick="S.trades=S.trades.filter(t=>t.id!=='${id}');save();closeModal();renderAll()">Delete</button><button class="btn ghost" onclick="closeModal()">Keep it</button></div>`);}
+
+/* ================== RENDER: SETUPS ================== */
+function renderSetups(){const g=grad();$('#setupLib').innerHTML=Object.entries(SETUPS).map(([k,s],i)=>`<div class="card ${['pink','lav','pool'][i]}">
+  <div class="card-h"><h2>${s.icon} ${s.name}</h2><span class="sticker ${i===0?'ink':'pk'}">${g[k].n} paper trades</span></div>
+  <div style="font-weight:700;line-height:1.4">${esc(s.one)}</div>
+  <div class="anton" style="margin-top:12px;font-size:14px">The checklist</div>
+  <ul class="checks">${s.rules.map(r=>`<li><b>✦</b><span>${esc(r)}</span></li>`).join('')}</ul>
+  <div class="calc"><div><div class="k">Entry</div><div style="font-size:12px;margin-top:3px">${esc(s.entry)}</div></div><div><div class="k">Stop</div><div style="font-size:12px;margin-top:3px">${esc(s.stop)}</div></div><div><div class="k">Target</div><div style="font-size:12px;margin-top:3px">${esc(s.target)}</div></div></div>
+  <div style="margin-top:10px;font-size:14px"><b>🚫 Skip it when:</b> ${esc(s.avoid)}</div></div>`).join('');}
+function renderDetFeed(){const d=M.det;$('#detFeed').innerHTML=d.length?d.map(x=>`<div class="hist"><div class="row"><span class="anton">${SETUPS[x.setup].icon} ${short(x.sym)}</span><span class="sticker ${x.dir==='LONG'?'pool':'pk'}" style="font-size:9px">${dl(x.dir)}</span><div class="sp"></div><span class="muted small">${timeStr(x.t)}</span></div><div class="muted small">${esc(x.note)}</div></div>`).join(''):`<div class="empty">No setups fired in the last 15 min.</div>`;}
+
+/* ================== RENDER: LEARN ================== */
+function ritualState(){const d=today();const r=S.ritual[d]||{};r.lesson=Object.values(S.lessons).some(v=>et(v).date===d);r.drill=(S.drill.byDay[d]||0)>=5;r.plan=((S.plans[d]||'').trim().length>=15);S.ritual[d]=r;return r;}
+function streak(){let n=0;for(let i=0;i<400;i++){const d=et(Date.now()-i*864e5).date;const r=S.ritual[d];const c=r?['lesson','drill','plan','journal'].filter(k=>r[k]).length:0;if(c>=3)n++;else if(i>0)break;}return n;}
+function renderRitual(){const r=ritualState();const items=[['lesson','📖 Read today\'s lesson',true],['drill',`🎯 5 replay reps (${S.drill.byDay[today()]||0}/5)`,true],['plan','🗺 Write tomorrow\'s plan (below)',true],['journal','🕯 Journal every trade (or "sat on hands")',false]];
+  $('#ritual').innerHTML=items.map(([k,l,auto])=>`<label class="ritem"><input type="checkbox" ${r[k]?'checked':''} ${auto?'disabled':''} data-rk="${k}"><span>${l}</span>${auto?'<span class="sp"></span><span class="muted small">auto</span>':''}</label>`).join('');
+  document.querySelectorAll('[data-rk=journal]').forEach(c=>c.onchange=()=>{S.ritual[today()].journal=c.checked;save();renderRitual();});
+  $('#streak').textContent=streak();save();}
+function renderGrad(){const g=grad();const best=Object.entries(g).sort((a,b)=>b[1].n-a[1].n)[0];const un=realUnlocked();
+  $('#gradTag').textContent=un?(S.override?'override':'unlocked'):'locked';
+  const [k,x]=best;const bar=(l,v,max,txt)=>`<div class="prog"><div class="top2"><span>${l}</span><span>${txt}</span></div><div class="bar"><i style="width:${Math.min(100,Math.max(0,v/max*100))}%"></i></div></div>`;
+  $('#gradBox').innerHTML=`<div class="anton" style="margin-top:12px">Closest: ${SETUPS[k].icon} ${SETUPS[k].name}</div>
+   ${bar('Paper trades',x.n,50,x.n+' / 50')}${bar('Days of data',x.days,30,x.days.toFixed(0)+' / 30')}
+   <div class="prog"><div class="top2"><span>Expectancy</span><span class="${x.exp>0?'pos':'neg'}">${x.n?rr(x.exp):'—'} ${x.exp>0?'✅':'(needs > 0)'}</span></div></div>
+   ${un?`<div style="font-weight:700;margin-top:8px">💸 Real mode is open. Start at the smallest size your broker allows.</div>`:`<button class="btn sm pk" style="margin-top:8px" onclick="askOverride()">Override (not recommended)</button>`}
+   ${S.override?`<button class="btn sm ghost" style="margin-top:8px" onclick="S.override=false;if(!realUnlocked())S.mode='paper';save();renderAll()">Re-lock real mode</button>`:''}`;}
+function askOverride(){modal(`<div class="card-h"><h2>Skip graduation?</h2></div><div class="muted">It's your money and your call. Just know: paper proof is the only evidence you have an edge. If you override, type <b>I ACCEPT THE RISK</b>.</div><input id="ovIn" style="margin-top:10px" autocapitalize="characters"><div class="row" style="margin-top:10px"><button class="btn pk" onclick="if($('#ovIn').value.trim().toUpperCase()==='I ACCEPT THE RISK'){S.override=true;save();closeModal();renderAll();toast('Real mode unlocked. Tiny size, babe.')}else toast('Type it exactly')">Unlock</button><button class="btn ghost" onclick="closeModal()">Keep paper</button></div>`);}
+function renderLessons(){const done=Object.keys(S.lessons).length;$('#lessonProg').textContent=`${done}/${LESSONS.length}`;const cur=LESSONS.findIndex((_,i)=>!S.lessons[i]);
+  $('#lessons').innerHTML=LESSONS.map((l,i)=>{const d=!!S.lessons[i];const open=i===cur;return `<div class="lesson ${d?'done':''}"><div class="n">LESSON ${String(i+1).padStart(2,'0')} ${d?'· ✓ done':open?'· ✦ up next':''}</div>
+    <h3>${esc(l.t)}</h3>${open?l.b.map(p=>`<p>${esc(p)}</p>`).join('')+`<div class="task"><b>Try it:</b> ${esc(l.task)}</div><button class="btn sm" style="margin-top:10px" onclick="S.lessons[${i}]=Date.now();save();renderLearn()">Mark done ✓</button>`:
+    `<button class="btn sm ghost" style="font-size:11px" onclick="peek(${i},this)">${d?'Review':'Peek'}</button>`}</div>`;}).join('');}
+function peek(i,btn){const l=LESSONS[i];btn.outerHTML=l.b.map(p=>`<p>${esc(p)}</p>`).join('')+`<div class="task"><b>Try it:</b> ${esc(l.task)}</div>`;}
+function candleSvg(arr){const w=arr.length*22+12;let s=`<svg viewBox="0 0 ${w} 100" width="${w}" height="92">`;arr.forEach(([o,h,l,c,hl],i)=>{const X=13+i*22,Y=v=>92-v*.84,col=c>=o?'#36EDFF':'#E9097C';
+  s+=`<line x1="${X}" x2="${X}" y1="${Y(h)}" y2="${Y(l)}" stroke="${col}" stroke-width="2"/><rect x="${X-6}" y="${Y(Math.max(o,c))}" width="12" height="${Math.max(2,Math.abs(o-c)*.84)}" fill="${col}" ${hl?'stroke="#fff" stroke-width="1.5"':''}/>`;});return s+'</svg>';}
+function renderCheat(){$('#cheat').innerHTML=PATTERNS.map(p=>`<div class="pat">${candleSvg(p.c)}<div><h4>${p.n}</h4><span class="sticker ink" style="font-size:9px">${p.tag}</span><div style="font-size:13px;margin-top:5px;line-height:1.4">${esc(p.m)}</div></div></div>`).join('');}
+
+const D={cs:null,idx:0,state:'idle',last:null};
+async function drillNew(){try{if(!D.cs||Date.now()-D.at>36e5){D.cs=await getCandles('BTC-USD',900);D.at=Date.now();}}catch(e){blockedHelp();return;}
+  D.idx=55+Math.floor(Math.random()*(D.cs.length-62));D.state='guess';renderDrill();}
+function drillGuess(g){const a=D.cs[D.idx].c,b=D.cs[D.idx+4].c,right=(b>a)===(g==='UP');S.drill.total++;if(right)S.drill.right++;const d=today();S.drill.byDay[d]=(S.drill.byDay[d]||0)+1;
+  D.state='reveal';D.last={g,right,move:(b-a)/a*100};save();sfx(right?'win':'tick');renderDrill();renderRitual();}
+function renderDrill(){$('#drillScore').textContent=`${S.drill.right}/${S.drill.total}`;const cv=$('#drillCv'),ctl=$('#drillCtl');
+  if(D.state==='idle'){drawChart(cv,null,{empty:'Tap start to pull a random BTC moment.'});ctl.innerHTML=`<button class="btn block pool" onclick="drillNew()">Start a rep</button>`;return;}
+  const cs=D.cs.slice(0,D.idx+5),C=cs.map(c=>c.c);drawChart(cv,cs,{count:50,hideFrom:D.idx,reveal:D.state==='reveal',e9:ema(C,9),e20:ema(C,20)});
+  if(D.state==='guess')ctl.innerHTML=`<div class="muted small" style="margin-bottom:8px">${dateStr(D.cs[D.idx].t)} · Where is price 1 hour from now?</div><div class="dirbtns"><button class="long on" onclick="drillGuess('UP')">▲ Up</button><button class="short on" onclick="drillGuess('DOWN')">▼ Down</button></div>`;
+  else{const l=D.last;const today5=S.drill.byDay[today()]||0;ctl.innerHTML=`<div class="anton" style="font-size:22px;color:${l.right?'var(--pool)':'var(--scream)'}">${l.right?'✨ Called it':'💀 Nope'}  <span class="mono" style="font-size:14px">${pct(l.move)}</span></div>
+    <div class="muted small" style="margin:4px 0 10px">${l.right?'Nice. Now ask: was it skill (trend, level) or luck?':'Where was price vs the EMAs? Was there a level overhead/underneath?'} ${today5>=5?'· Ritual reps done ✓':`· ${today5}/5 today`}</div><button class="btn block pool" onclick="drillNew()">Next rep</button>`;}}
+
+function renderLearn(){renderNext();renderRitual();renderGrad();renderLessons();renderDrill();$('#planTxt').value=S.plans[today()]||'';}
+
+/* ================== SETTINGS ================== */
+function renderSettings(){const s=S.settings;$('#sPaper').value=s.paperStart;$('#sReal').value=s.realStart;$('#sRisk').value=s.riskPct;$('#sDaily').value=s.dailyLossPct;$('#sMaxT').value=s.maxTrades;$('#sRR').value=s.minRR;$('#sKCap').value=s.kLossCap;$('#sKMax').value=s.kMaxBets;
+  $('#sStocks').value=s.stocks.join(', ');$('#sFinn').value=s.finnhub;$('#sSound').checked=s.sound;}
+function bindSettings(){const map=[['#sPaper','paperStart',0,1e9],['#sReal','realStart',0,1e9],['#sRisk','riskPct',.05,5],['#sDaily','dailyLossPct',.1,20],['#sMaxT','maxTrades',1,50],['#sRR','minRR',.5,10],['#sKCap','kLossCap',1,1e6],['#sKMax','kMaxBets',1,100]];
+  map.forEach(([id,k,mn,mx])=>$(id).addEventListener('change',()=>{const v=num($(id).value);if(isFinite(v)){S.settings[k]=Math.min(mx,Math.max(mn,v));save();renderAll();}else renderSettings();}));
+  $('#sStocks').addEventListener('change',()=>{S.settings.stocks=$('#sStocks').value.split(/[,\s]+/).map(x=>x.trim().toUpperCase()).filter(Boolean).slice(0,15);save();fillSetupSelect();pollStocks();});
+  $('#sFinn').addEventListener('change',()=>{S.settings.finnhub=$('#sFinn').value.trim();save();pollStocks();});
+  $('#sSound').addEventListener('change',()=>{S.settings.sound=$('#sSound').checked;save();});
+  $('#sTest').onclick=()=>{ac();sfx('setup');};
+  $('#sNotif').onclick=async()=>{if(!('Notification'in window)){toast('Not supported here. On iPhone: Add to Home Screen first.');return;}const p=await Notification.requestPermission();toast(p==='granted'?'Notifications on ✨':'Notifications blocked');};
+  $('#sExport').onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spellbook-backup-${today()}.json`;document.body.appendChild(a);a.click();a.remove();toast('Backup exported 💾');};
+  $('#sImport').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings||!Array.isArray(d.trades))throw 0;S=deepMerge(JSON.parse(JSON.stringify(DEF)),d);save();renderAll();renderSettings();toast('Backup restored ✨');}catch(err){toast('That file isn\'t a Spell Book backup');}};r.readAsText(f);};
+  $('#sReset').onclick=()=>modal(`<div class="card-h"><h2>Wipe everything?</h2></div><div class="muted">Trades, journal, streaks, settings. Gone. Export a backup first.</div><div class="row" style="margin-top:12px"><button class="btn pk" onclick="localStorage.removeItem(KEY);location.reload()">Wipe it</button><button class="btn ghost" onclick="closeModal()">Nope</button></div>`);}
+
+
+/* ================== KALSHI CALLS ================== */
+const K={c1:{},hist:{},histAt:{},dir:{},cr:{},decided:0,scalpIn:null,mkt:null};
+const Phi=z=>{const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2);const p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+function roundOf(now,len){const L=len*60000,start=Math.floor(now/L)*L;return{start,end:start+L,lockAt:start+Math.min(10,len/2)*60000,len};}
+function callRead(cs,px,line,minsLeft){
+  if(!cs||cs.length<40||!isFinite(px)||!isFinite(line))return null;
+  const sb=readSpellbook(cs);if(!sb)return null;
+  const atr=atrArr(cs)[cs.length-1]||px*.0005;const m=Math.max(minsLeft,.5);
+  const sigma=atr*Math.sqrt(m)*.9;const drift=sb.score/6*atr*.25*m;
+  const pUp=Phi((px-line+drift)/sigma);
+  return{pUp,sb,atr,cushion:px-line,sigma};
+}
+async function loadC1(){for(const p of CRYPTO){try{K.c1[p]=await getCandles(p,60);M.feedOk=Date.now();}catch(e){M.feedErr=Date.now();}await sleep(200);}}
+function liveC1(sym){const px=M.px[sym];const cs=(K.c1[sym]||[]).map(c=>({...c}));if(cs.length&&isFinite(px)){const l=cs[cs.length-1];l.c=px;l.h=Math.max(l.h,px);l.l=Math.min(l.l,px);}return cs;}
+function candleAt(sym,t){return(K.c1[sym]||[]).find(c=>c.t===t);}
+const lk=(sym,start)=>sym+'|'+start;
+function lineFor(sym,r){const man=S.kline[lk(sym,r.start)];if(isFinite(man))return man;if(isFinite(r.line))return r.line;const c=candleAt(sym,r.start);return c?c.o:NaN;}
+function tryGrade(){const keep=[];for(const r of S.calls.ungraded){const sym=r.sym||'BTC-USD';const c=candleAt(sym,r.end-60000);const liveOk=Date.now()-r.end<20000&&isFinite(r.endLive);
+  const endPx=c&&Date.now()>=r.end+60000?c.c:(liveOk?r.endLive:NaN);
+  if(!isFinite(endPx)){if(Date.now()-r.end<3*36e5)keep.push(r);continue;}
+  const won=r.dir==='UP'?endPx>r.line:endPx<r.line;
+  S.calls.hist.push({sym,start:r.start,len:r.len,line:r.line,dir:r.dir,conf:r.conf,risk:r.risk,endPx,won});if(S.calls.hist.length>1500)S.calls.hist.shift();
+  if(sym===S.calls.sym){sfx(won?'win':'tick');toast(won?`✨ ${short(sym)} call hit! ${r.dir} was right`:`💀 ${short(sym)} call missed`);}}
+  S.calls.ungraded=keep;}
+function engineTick(){const now=Date.now(),len=S.calls.len,b=roundOf(now,len);
+  for(const sym of CRYPTO){let r=S.calls.rounds[sym];
+    if(r&&now>=r.end){if(r.locked)S.calls.ungraded.push({...r,sym,endLive:M.px[sym]});r=null;K.dir[sym]=null;if(sym===S.calls.sym)K.decided=0;}
+    if(!r||r.start!==b.start||r.len!==len){r={...b,line:NaN,locked:false};K.dir[sym]=null;}
+    if(!isFinite(r.line)){const c=candleAt(sym,r.start);r.line=c?c.o:(now-r.start<30000?M.px[sym]:NaN);}
+    S.calls.rounds[sym]=r;
+    const line=lineFor(sym,r),px=M.px[sym];const cr=callRead(liveC1(sym),px,line,(r.end-now)/60000);K.cr[sym]=cr;
+    if(cr){const d=cr.pUp>=.5?'UP':'DOWN';if(!K.dir[sym])K.dir[sym]=d;else if(d!==K.dir[sym]&&Math.abs(cr.pUp-.5)>.04){K.dir[sym]=d;if(!r.locked&&sym===S.calls.sym)sfx('flip');}
+      if(!r.locked&&now>=r.lockAt){const conf=Math.round(Math.max(cr.pUp,1-cr.pUp)*100);Object.assign(r,{locked:true,dir:K.dir[sym],conf,risk:conf>=70?'LOW':conf>=58?'MED':'HIGH',line});
+        if(sym===S.calls.sym){sfx('lock');toast(`🔒 ${short(sym)} call locked: ${K.dir[sym]}`);notify(`${short(sym)} call locked`,`${K.dir[sym]} · ${conf}% · round ends ${timeStr(r.end)}`);}}}}
+  tryGrade();
+  if(S.kbet){const r=S.calls.rounds[S.kbet.sym||'BTC-USD'];if(r&&!K.decided&&r.end-now<60000){K.decided=1;sfx('decide');toast('⏰ Under a minute left. Hold or cash out?');}}
+  save();}
+function mmss(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+function renderCalls(){if(!$('#t-calls').classList.contains('on'))return;const sym=S.calls.sym;
+  $('#lenChips').innerHTML=[2,5,10,11,15].map(l=>`<button class="chip ${l===S.calls.len?'on':''}" onclick="setLen(${l})">${l}m</button>`).join('');
+  $('#coinBoard').innerHTML=CRYPTO.map(p=>{const r=S.calls.rounds[p],c=K.cr[p];const d=r&&r.locked?r.dir:K.dir[p];const cf=r&&r.locked?r.conf:(c?Math.round(Math.max(c.pUp,1-c.pUp)*100):null);
+    return `<button class="wcard ${p===sym?'sel':''}" style="min-height:0;padding:7px 4px;text-align:center" onclick="setCoin('${p}')"><div class="sym" style="font-size:14px">${short(p)}</div><div class="anton" style="font-size:16px;color:${d==='UP'?'var(--pool)':d==='DOWN'?'var(--scream)':'var(--dim)'}">${d?(d==='UP'?'▲':'▼')+' '+d:'…'}</div><div class="mono" style="font-size:10px;color:var(--dim)">${cf?cf+'%':''}${r&&r.locked?' 🔒':''}</div></button>`;}).join('');
+  const r=S.calls.rounds[sym],now=Date.now(),cr=K.cr[sym],px=M.px[sym];const box=$('#callBox');
+  $('#kLine').value=r&&isFinite(S.kline[lk(sym,r.start)])?S.kline[lk(sym,r.start)]:'';
+  if(!r||!cr){box.innerHTML=`<div class="empty">${feedBlocked()?'Live data is blocked on this screen. Open the app from its web link.':'Reading the room… (needs live data)'}</div>`;}
+  else{const line=lineFor(sym,r);const locked=r.locked;const dir=locked?r.dir:K.dir[sym];const col=dir==='UP'?'var(--pool)':'var(--scream)';
+    const pSide=dir==='UP'?cr.pUp:1-cr.pUp;const conf=locked?r.conf:Math.round(pSide*100);const risk=locked?r.risk:(conf>=70?'LOW':conf>=58?'MED':'HIGH');
+    const tot=r.end-r.start,deb=(r.lockAt-r.start)/tot*100,prog=Math.min(100,(now-r.start)/tot*100);
+    box.innerHTML=`<div class="bigcall" style="--bc:${col}">
+      <div class="anton small" style="letter-spacing:2px;color:var(--dim)">${short(sym)} · ${locked?'🔒 LOCKED CALL · graded at '+timeStr(r.end):'⚠️ RISKY EARLY READ · still debating'}</div>
+      <div class="row" style="justify-content:center;gap:14px;margin-top:6px"><div class="w">${dir}</div><div style="text-align:left"><div class="anton" style="font-size:28px;color:${col}">${conf}%</div><span class="sticker ${risk==='HIGH'?'pk':risk==='MED'?'lav':'pool'}">risk ${risk}</span></div></div>
+      <div class="row" style="justify-content:center;margin-top:10px;gap:16px"><div><div class="k anton small" style="color:var(--dim)">${locked?'round ends in':'locks in'}</div><div class="cd">${mmss((locked?r.end:r.lockAt)-now)}</div></div></div>
+      <div class="phase"><i style="width:${Math.min(prog,deb)}%;background:var(--mauve)"></i><i style="width:${Math.max(0,prog-deb)}%;background:${col}"></i></div>
+      <div class="row small" style="justify-content:space-between;margin-top:3px;color:var(--dim)"><span>debate</span><span>locked window</span></div></div>
+      <div class="lvls" style="margin-top:10px"><div class="lvl"><div class="k">Line to beat</div><div class="v">${fmt(line)}</div></div><div class="lvl"><div class="k">${short(sym)} now</div><div class="v">${fmt(px)}</div></div><div class="lvl"><div class="k">Cushion</div><div class="v ${cr.cushion>=0?'pos':'neg'}">${cr.cushion>=0?'+':''}${fmt(cr.cushion)}</div></div></div>
+      <div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">${cr.sb.sigs.map(s=>`<span class="sticker ${s[1]>0?'pool':s[1]<0?'pk':'ink'}" style="transform:none;font-size:10px">${esc(s[2])}</span>`).join('')}</div>
+      <div class="muted small" style="margin-top:8px">${Math.abs(cr.cushion)>cr.sigma?`Price is well ${cr.cushion>0?'above':'below'} the line with ${mmss(r.end-now)} left. That's the biggest factor here.`:`Price is close to the line. This one's close to a coin flip, so size small or skip.`} Kalshi settles on its own price index, which can differ slightly from Coinbase.</div>`;}
+  const H=S.calls.hist.filter(x=>x.len===S.calls.len&&(x.sym||'BTC-USD')===sym);const w=H.filter(x=>x.won).length,n=H.length;
+  const A=S.calls.hist.filter(x=>x.len===S.calls.len);const aw=A.filter(x=>x.won).length;
+  $('#callCounter').innerHTML=`<div><div class="v" style="color:var(--pool)">${w}</div><div class="k">${short(sym)} wins</div></div><div><div class="v" style="color:var(--scream)">${n-w}</div><div class="k">losses</div></div><div><div class="v">${n?Math.round(w/n*100)+'%':'—'}</div><div class="k">accuracy</div></div>`;
+  $('#callStrip').innerHTML=(H.slice(-14).map(x=>`<span class="rc ${x.won?'w':'l'}" title="${x.dir} · ${timeStr(x.start)}">${x.dir==='UP'?'▲':'▼'}</span>`).join('')||'<span class="muted small">No graded calls yet. First one lands at the end of this round.</span>')+
+    `<div style="width:100%;margin-top:8px" class="small"><b>All coins:</b> ${aw}/${A.length} ${A.length?'('+Math.round(aw/A.length*100)+'%)':''} · ${CRYPTO.map(p=>{const X=A.filter(x=>(x.sym||'BTC-USD')===p);return `${short(p)} ${X.length?Math.round(X.filter(x=>x.won).length/X.length*100)+'%':'—'}`;}).join(' · ')}</div>`;
+  $('#callVerdict').textContent=n<30?`${n} graded ${short(sym)} ${S.calls.len}-min calls. Under 30 is noise, keep watching before betting on it.`:w/n>=.56?`${Math.round(w/n*100)}% over ${n} calls. Promising. Keep checking it holds over 100+.`:`${Math.round(w/n*100)}% over ${n} calls. That's coin-flip territory. After fees it would lose money.`;
+  renderKBet();renderScalp();renderKLedger();}
+function setLen(l){S.calls.len=l;S.calls.rounds={};K.dir={};save();engineTick();renderCalls();}
+function setCoin(p){S.calls.sym=p;save();$('#labBox').innerHTML='';renderCalls();}
+
+function renderKBet(){const el=$('#kbBox');const b=S.kbet;const cap=S.settings.kLossCap;const tp=kToday();const nT=S.kbets.filter(x=>et(x.t).date===today()).length;
+  const blocked=tp<=-cap?`You're down ${money(-tp)} on Kalshi today (cap ${money(cap)}). Done for today.`:nT>=S.settings.kMaxBets?`That's ${nT} bets today, your limit. Done for today.`:'';
+  if(!b){$('#kbTag').textContent='no bet';
+    el.innerHTML=blocked?`<div class="banner"><span class="anton">🔒 Kalshi locked</span>${blocked}</div>`:`<div class="muted">Placed a bet on <b>${short(S.calls.sym)}</b> on Kalshi? Enter it here and you'll get a live hold / cash-out read.</div>
+    <div class="dirbtns" style="margin-top:8px"><button class="long ${kSide==='UP'?'on':''}" onclick="kSide='UP';renderKBet()">▲ UP / YES</button><button class="short ${kSide==='DOWN'?'on':''}" onclick="kSide='DOWN';renderKBet()">▼ DOWN / NO</button></div>
+    <div class="grid2"><div><label class="f">Contracts</label><input id="kbN" inputmode="numeric" value="1"></div><div><label class="f">Price paid (¢ each)</label><input id="kbP" inputmode="decimal" placeholder="e.g. 52"></div></div>
+    <button class="btn block pk" style="margin-top:12px" onclick="startKBet()">Track this bet</button>`;return;}
+  const bs=b.sym||'BTC-USD';const r=S.calls.rounds[bs],cr=K.cr[bs],now=Date.now();$('#kbTag').textContent=short(bs)+' '+b.side;
+  let read='—',why='Waiting on live data…',col='var(--mauve)',ch=NaN;
+  if(cr&&r){ch=b.side==='UP'?cr.pUp:1-cr.pUp;const fair=ch*100;const left=r.end-now;
+    if(ch>=.65){read='HOLD';col='var(--pool)';why=`Win chance ~${Math.round(ch*100)}%. Worth ~${fair.toFixed(0)}¢ vs your ${b.p}¢. Let it ride.`;}
+    else if(ch>=.5){read='HOLD · SHAKY';col='var(--lime)';why=`~${Math.round(ch*100)}%, barely your way. If it's worth more than you paid, cashing out locks in a small win.`;}
+    else if(ch>=.35){read='CONSIDER CASHING OUT';col='var(--bubble)';why=`~${Math.round(ch*100)}%, leaning against you with ${mmss(left)} left. Selling now saves part of it.`;}
+    else{read='CASH OUT';col='var(--scream)';why=`Only ~${Math.round(ch*100)}% to win. Sell what you can unless you're fine losing all ${money(b.n*b.p/100)}.`;}}
+  el.innerHTML=`<div class="bigcall" style="--bc:${col};margin-top:0"><div class="anton small" style="letter-spacing:2px;color:var(--dim)">${short(bs)} ${b.side} · ${b.n} × ${b.p}¢ · risking ${money(b.n*b.p/100)}</div><div class="w" style="font-size:40px">${read}</div><div class="small" style="margin-top:6px;line-height:1.45;color:var(--text)">${why}</div>
+    <div class="small" style="margin-top:6px;color:var(--dim)">Estimate from price, time left and volatility, not Kalshi's order book.</div></div>
+    <label class="f">How did it end?</label>
+    <div class="row wrapr"><button class="btn sm pool" onclick="settleK('won')">Won ($1 each)</button><button class="btn sm pk" onclick="settleK('lost')">Lost</button></div>
+    <div class="row" style="margin-top:8px"><input id="kbSold" inputmode="decimal" placeholder="sold at ¢"><button class="btn sm lav" onclick="settleK('sold')">Sold early</button></div>
+    <button class="btn sm ghost" style="margin-top:8px;font-size:10px" onclick="S.kbet=null;save();renderCalls()">cancel (typo)</button>`;}
+let kSide='UP';
+function kToday(){return S.kbets.filter(x=>et(x.t).date===today()).reduce((a,x)=>a+x.pnl,0);}
+function startKBet(){const n=num($('#kbN').value),p=num($('#kbP').value);if(!(n>0)||!(p>0&&p<100)){toast('Enter contracts and a price between 1 and 99¢');return;}
+  const sym=S.calls.sym,rr=S.calls.rounds[sym];S.kbet={sym,side:kSide,n,p,t:Date.now(),round:rr&&rr.start,bot:rr&&(rr.locked?rr.dir:K.dir[sym])};save();sfx('lock');renderCalls();renderNext();}
+function settleK(how){const b=S.kbet;let out;if(how==='won')out=100;else if(how==='lost')out=0;else{out=num($('#kbSold').value);if(!(out>=0&&out<=100)){toast('Enter the price you sold at (¢)');return;}}
+  const pnl=b.n*(out-b.p)/100;S.kbets.unshift({...b,how,out,pnl,t:b.t,closed:Date.now()});S.kbet=null;save();sfx(pnl>0?'win':'tick');toast(pnl>0?`✨ +${money(pnl)} logged`:`Logged ${money(pnl)}`);
+  if(kToday()<=-S.settings.kLossCap){sfx('warn');setTimeout(()=>toast('🔒 Kalshi loss cap hit. Done for today.'),1600);}renderCalls();renderNext();}
+function renderKLedger(){const L=S.kbets;const w=L.filter(x=>x.pnl>0).length;const tot=L.reduce((a,x)=>a+x.pnl,0);const withBot=L.filter(x=>x.bot);const agree=withBot.filter(x=>x.bot===x.side);
+  $('#kStats').innerHTML=`<div><div class="k">Bets</div><div class="v">${L.length}</div></div><div><div class="k">Win rate</div><div class="v">${L.length?Math.round(w/L.length*100)+'%':'—'}</div></div><div><div class="k">Total P/L</div><div class="v ${tot>=0?'pos':'neg'}">${money(tot)}</div></div><div><div class="k">Today</div><div class="v ${kToday()>=0?'pos':'neg'}">${money(kToday())}</div></div>`;
+  $('#kList').innerHTML=L.length?L.slice(0,20).map(x=>`<div class="srow"><span class="sticker ${x.side==='UP'?'pool':'pk'}" style="font-size:9px">${short(x.sym||'BTC-USD')} ${x.side}</span><span class="small">${dateStr(x.t)} ${timeStr(x.t)} · ${x.n}×${x.p}¢ → ${x.how==='sold'?'sold '+x.out+'¢':x.how}${x.bot?` · bot said ${x.bot}`:''}</span><div class="sp"></div><b class="mono ${x.pnl>=0?'pos':'neg'}">${money(x.pnl)}</b></div>`).join('')+(agree.length>=5?`<div class="muted small" style="margin-top:8px">When you bet WITH the bot: ${Math.round(agree.filter(x=>x.pnl>0).length/agree.length*100)}% win (${agree.length} bets). Against it: ${withBot.length-agree.length?Math.round(withBot.filter(x=>x.bot!==x.side&&x.pnl>0).length/(withBot.length-agree.length)*100)+'%':'—'}.</div>`:''):`<div class="empty">No Kalshi bets logged yet. Fees aren't included, so real results run a little lower.</div>`;}
+
+function renderScalp(){const el=$('#scalpBox');const sym=S.calls.sym;const cs=liveC1(sym);if(cs.length<30){el.innerHTML='<div class="muted">Waiting on 1-min candles…</div>';return;}
+  const C=cs.map(c=>c.c),n=C.length-1;const e3=ema(C,3),e8=ema(C,8),r7=rsiArr(C,7)[n];const mom=C[n]>C[n-1]&&C[n-1]>C[n-2]?1:C[n]<C[n-1]&&C[n-1]<C[n-2]?-1:0;
+  const av=avg(cs.slice(-21,-1).map(c=>c.v)),spike=cs[n].v>1.8*av||cs[n-1].v>1.8*av;
+  let sig='NONE';if(e3[n]>e8[n]&&r7>55&&r7<80&&mom>0)sig='UP';if(e3[n]<e8[n]&&r7<45&&r7>20&&mom<0)sig='DOWN';
+  const col=sig==='UP'?'var(--pool)':sig==='DOWN'?'var(--scream)':'var(--mauve)';const s=K.scalpIn&&K.scalpIn.sym===sym?K.scalpIn:null;let trk='';
+  if(s){const px=C[n];const pc=(px-s.px)/s.px*100*(s.dir==='UP'?1:-1);const against=s.dir==='UP'?e3[n]<e8[n]:e3[n]>e8[n];
+    const exit=against||pc<=-.15||pc>=.3;trk=`<div class="setupalert ${exit?'short':''}" style="margin-top:10px"><div class="row"><span class="anton" style="font-size:18px">${exit?'🚪 GET OUT':'✊ STAY IN'}</span><div class="sp"></div><b class="mono ${pc>=0?'pos':'neg'}">${pc>=0?'+':''}${pc.toFixed(2)}%</b></div>
+    <div class="muted small">${exit?(pc>=.3?'Hit the +0.3% scalp target. Take it.':pc<=-.15?'Down 0.15%. Scalps die fast, cut it.':'Fast line crossed against you. Momentum flipped.'):'Momentum still with you.'} In at ${fmt(s.px)}.</div><button class="btn sm ghost" style="margin-top:6px" onclick="K.scalpIn=null;renderScalp()">I'm out</button></div>`;}
+  el.innerHTML=`<div class="row"><span class="anton" style="font-size:36px;color:${col}">${short(sym)} ${sig==='NONE'?'· no scalp':sig}</span><div class="sp"></div>${spike?'<span class="sticker">vol spike</span>':''}</div>
+   <div class="meta" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><span class="sticker ${e3[n]>e8[n]?'pool':'pk'}" style="transform:none;font-size:10px">3 vs 8 EMA ${e3[n]>e8[n]?'up':'down'}</span><span class="sticker ink" style="transform:none;font-size:10px">RSI7 ${r7.toFixed(0)}</span><span class="sticker ${mom>0?'pool':mom<0?'pk':'ink'}" style="transform:none;font-size:10px">3-candle ${mom>0?'up':mom<0?'down':'mixed'}</span></div>
+   <div class="muted small" style="margin-top:6px">Quick in-and-out on 1-min moves. Riskiest thing in the app. Paper only until your journal says otherwise.</div>
+   ${!s&&sig!=='NONE'?`<button class="btn sm" style="margin-top:8px" onclick="K.scalpIn={sym:'${sym}',dir:'${sig}',px:M.px['${sym}']};renderScalp()">I'm in (track my exit)</button>`:''}${trk}`;}
+
+async function runLab(){const el=$('#labBox');el.innerHTML='<div class="muted">Pulling BTC history…</div>';
+  const sym=S.calls.sym;try{if(!K.hist[sym]||Date.now()-(K.histAt[sym]||0)>6e5){let all=[];let end=Date.now();for(let i=0;i<4;i++){const st=end-300*60000;const d=await j(`${API}/products/${sym}/candles?granularity=60&start=${new Date(st).toISOString()}&end=${new Date(end).toISOString()}`);
+      all=all.concat(d.map(a=>({t:a[0]*1000,l:+a[1],h:+a[2],o:+a[3],c:+a[4],v:+a[5]})));end=st;await sleep(250);}
+    const seen={};K.hist[sym]=all.filter(c=>!seen[c.t]&&(seen[c.t]=1)).sort((a,b)=>a.t-b.t);K.histAt[sym]=Date.now();}}
+  catch(e){el.innerHTML=feedBlocked()?'<div class="muted">Live data is blocked on this screen.</div>':'<div class="muted">Couldn\'t load history. Try again in a minute.</div>';return;}
+  const cs=K.hist[sym],len=S.calls.len,idx={};cs.forEach((c,i)=>idx[c.t]=i);let w=0,n=0,hc=0,hw=0;
+  const first=cs[60]?cs[60].t:0;for(let s=Math.ceil(first/(len*6e4))*len*6e4;s+len*6e4<=cs[cs.length-1].t;s+=len*6e4){
+    const b=roundOf(s,len);const i0=idx[b.start],iL=idx[b.lockAt-6e4],iE=idx[b.end-6e4];if(i0==null||iL==null||iE==null||iL<50)continue;
+    const line=cs[i0].o;const sub=cs.slice(Math.max(0,iL-299),iL+1);const cr=callRead(sub,cs[iL].c,line,(b.end-b.lockAt)/6e4);if(!cr)continue;
+    const dir=cr.pUp>=.5?'UP':'DOWN';const won=dir==='UP'?cs[iE].c>line:cs[iE].c<line;n++;if(won)w++;const cf=Math.max(cr.pUp,1-cr.pUp);if(cf>=.7){hc++;if(won)hw++;}}
+  if(!n){el.innerHTML='<div class="muted">Not enough history for that round length.</div>';return;}
+  const pc=w/n*100;el.innerHTML=`<div class="anton" style="margin-bottom:6px">${short(sym)} · ${len}-min rounds</div><div class="counter"><div><div class="v">${n}</div><div class="k">rounds</div></div><div><div class="v" style="color:${pc>=56?'var(--pool)':'var(--scream)'}">${pc.toFixed(0)}%</div><div class="k">right</div></div><div><div class="v">${hc?Math.round(hw/hc*100)+'%':'—'}</div><div class="k">when ≥70% sure (${hc})</div></div></div>
+   <div class="muted small" style="margin-top:8px">${n<60?'Small sample, treat it as a rough hint. ':''}${pc>=56?'Beating a coin flip here. The locked call usually has a cushion by lock time, which is why it does better than a pure guess.':'Not clearly beating a coin flip on this stretch.'} Past rounds don't guarantee future ones, and Kalshi prices already reflect the cushion, so a right call doesn't always mean a cheap bet.</div>`;}
+
+function bindCalls(){$('#labGo').onclick=runLab;
+  $('#kLine').addEventListener('change',()=>{const v=num($('#kLine').value);const sym=S.calls.sym,r=S.calls.rounds[sym];if(!r)return;if(isFinite(v))S.kline[lk(sym,r.start)]=v;else delete S.kline[lk(sym,r.start)];save();engineTick();renderCalls();});
+  $('#kLineClr').onclick=()=>{const sym=S.calls.sym,r=S.calls.rounds[sym];if(r)delete S.kline[lk(sym,r.start)];$('#kLine').value='';save();engineTick();renderCalls();};
+  $('#calReset').onclick=()=>modal(`<div class="card-h"><h2>Reset the War Record?</h2></div><div class="muted">Clears every graded call. Only do this if you changed the round length strategy.</div><div class="row" style="margin-top:12px"><button class="btn pk" onclick="S.calls.hist=[];save();closeModal();renderCalls()">Reset</button><button class="btn ghost" onclick="closeModal()">Keep</button></div>`);
+  $('#kTickGo').onclick=loadKMkt;}
+async function loadKMkt(){const t=$('#kTick').value.trim().toUpperCase();if(!t)return;const el=$('#kMkt');el.innerHTML='<div class="muted small">Loading…</div>';
+  try{const d=await j(`https://api.elections.kalshi.com/trade-api/v2/markets/${encodeURIComponent(t)}`);const m=d.market;if(!m)throw 0;K.mkt=m;
+    const strike=m.floor_strike??m.cap_strike;const close=Date.parse(m.close_time);const sym=S.calls.sym,r=S.calls.rounds[sym];
+    if(isFinite(strike)&&r&&Math.abs(close-r.end)<120000){S.kline[lk(sym,r.start)]=+strike;$('#kLine').value=strike;save();engineTick();}
+    el.innerHTML=`<div class="setupalert" style="margin-top:0"><div class="anton" style="font-size:16px">${esc(m.title||t)}</div><div class="lvls"><div class="lvl"><div class="k">Yes (bid/ask)</div><div class="v">${m.yes_bid??'—'}¢ / ${m.yes_ask??'—'}¢</div></div><div class="lvl"><div class="k">No (bid/ask)</div><div class="v">${m.no_bid??'—'}¢ / ${m.no_ask??'—'}¢</div></div><div class="lvl"><div class="k">Strike</div><div class="v">${isFinite(strike)?fmt(+strike):'—'}</div></div></div><div class="muted small">Closes ${isFinite(close)?timeStr(close):'—'} · ${esc(m.status||'')}${isFinite(strike)&&r&&Math.abs(close-r.end)<120000?' · strike set as your line to beat ✓':''}</div></div>`;renderCalls();}
+  catch(e){el.innerHTML=`<div class="muted small">Couldn't load it. Either the ticker is wrong or Kalshi blocks browsers from reading it directly. Type the strike into "Line to beat" above instead.</div>`;}}
+
+/* ================== BEGINNER HELP ================== */
+const GLOSS={
+ gate:['The Gate','A 4-question checklist you answer before every trade. It stops the #1 beginner mistake: trading on a feeling. If you can\'t answer all 4, you don\'t trade.'],
+ setup:['Setup','One of your 3 specific chart patterns. The app watches for them and pings you. If it\'s not a setup, it\'s not a trade.'],
+ entry:['Entry (get in)','The price you buy at (or sell at, if betting down). Usually the current price when the setup fires.'],
+ stop:['Stop loss (bail out)','The price where you admit you were wrong and get out. It keeps one bad trade small. Pick it BEFORE you get in, never move it further away.'],
+ target:['Target (take profit)','The price where you cash out the win. The app sets it to 2× your risk, so one win covers two losses.'],
+ size:['Size','How many coins or shares you buy. The app sets it so that if your bail-out gets hit, you only lose your risk % (1% by default). Tight bail-out = bigger size. Far bail-out = smaller size.'],
+ r:['R','Short for "risk". 1R = what you\'d lose if your bail-out hits. +2R means you made twice what you risked. -1R means a normal, planned loss.'],
+ exp:['Expectancy','Your average result per trade, in R. Above 0 = your setup makes money over time. Below 0 = it doesn\'t (yet). Needs 20+ trades before it means anything.'],
+ ema:['EMA lines','Moving averages: a smoothed line of recent prices. Pink = last 9 candles (fast), purple = last 20 (slow). Pink above purple and both pointing up = uptrend. Tangled and flat = chop, stay out.'],
+ vwap:['VWAP','The cyan dashed line: the average price everyone paid today. Above it = buyers winning the day. Below = sellers. Big traders watch it closely.'],
+ candle:['Candles','Each bar = one chunk of time (1, 5 or 15 min). Cyan = price went up in that chunk, pink = down. The thick body is open-to-close, the thin wicks are how far it got pushed. See the Candle Cheat Sheet in Learn.'],
+ paper:['Paper trading','Fake money, real prices. You practice the whole process with zero risk until you\'ve proven a setup works for you.'],
+ short:['Shorting (Down)','Betting a price will fall. You profit if it drops. Riskier and not allowed on many beginner accounts, so start with Up trades.']};
+function gl(k){const g=GLOSS[k];if(!g)return;modal(`<div class="card-h"><h2>${esc(g[0])}</h2></div><div style="line-height:1.55">${esc(g[1])}</div><button class="btn block" style="margin-top:14px" onclick="closeModal()">Got it</button>`);}
+function renderGloss(){$('#glossList').innerHTML=Object.values(GLOSS).map(g=>`<div class="gl"><b>${esc(g[0])}</b><div>${esc(g[1])}</div></div>`).join('');}
+
+const ONB=[
+ ['🔮','This app doesn\'t tell you what to buy','It watches crypto 24/7 for <b>3 specific chart patterns</b> (called setups). When one shows up, you hear a sparkle. Then YOU decide, using a simple checklist.'],
+ ['📝','You start with fake money','You get <b>$10,000 of paper money</b>. Real prices, zero risk. Real-money mode stays locked until you\'ve proven a setup works on paper (50 trades over 30 days).'],
+ ['🚪','Every trade goes through the Gate','4 quick questions: <b>what & which way, which setup, where you get in & out, why</b>. The app does all the math and picks the numbers if you want. If any answer is "no", you don\'t trade.'],
+ ['⏳','Kalshi calls have their own tab','The <b>Calls</b> tab makes an UP/DOWN call on BTC, ETH, SOL, XRP and DOGE every 15 minutes, locks it, and grades itself. Watch its War Record before betting: under ~55% right over 100+ rounds is a coin flip, and fees make coin flips lose.'],
+ ['🌙','Evenings are for the ritual','Most of learning happens off-market: a 5-min lesson, 5 chart guesses on real BTC history, and a plan for tomorrow. That builds your streak.'],
+ ['⚡','Your first move','Tap <b>Start Lesson 1</b>. Tap any <b>?</b> in the app to get a word explained. The green box on the home screen always tells you the next thing to do.']];
+let onbI=0;
+function onboard(i=0){onbI=i;const o=ONB[i];modal(`<div class="onb"><div class="dots">${ONB.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div><div class="emoji">${o[0]}</div><h2>${o[1]}</h2><p>${o[2]}</p>
+  <div class="gnav">${i>0?`<button class="btn ghost" onclick="onboard(${i-1})">← Back</button>`:''}${i<ONB.length-1?`<button class="btn" onclick="onboard(${i+1})">Next →</button>`:`<button class="btn pk" onclick="S.onboarded=true;save();closeModal();tab('learn');renderNext()">Start Lesson 1</button>`}</div>
+  ${i<ONB.length-1?`<button class="btn sm ghost" style="margin-top:10px;font-size:11px" onclick="S.onboarded=true;save();closeModal();renderNext()">Skip</button>`:''}</div>`);}
+
+const BOOT=Date.now();
+const feedBlocked=()=>!M.feedOk&&M.feedErr&&Date.now()-BOOT>6000;
+function blockedHelp(){modal(`<div class="card-h"><h2>📵 Live data is blocked here</h2></div><div style="line-height:1.55">
+  <p>You're probably viewing this inside a <b>file preview</b> (like Claude's or the Files app). Previews don't let apps reach the internet, so prices, alerts, the chart and the replay drill can't load.</p>
+  <p style="margin-top:8px"><b>Fix:</b> open the app from its web link (your GitHub Pages address) in Safari, then Share → Add to Home Screen.</p>
+  <p style="margin-top:8px">On a computer, you can also just double-click the file to open it in Chrome or Safari.</p></div>
+  <button class="btn block" style="margin-top:14px" onclick="closeModal()">Got it</button>`);}
+function renderNext(){const el=$('#nextStep');if(!el)return;let e,t,b,a;
+  const act=M.det.filter(d=>Date.now()-d.t<15*60000);const r=S.ritual[today()]||{};const done=Object.keys(S.lessons).length;const op=openT(S.mode);
+  if(feedBlocked()){e='📵';t='Live data can\'t load here';b='This screen is blocking internet access (common in file previews). Prices, alerts and the replay need the web-link version.';a=`<button class="btn pk" onclick="blockedHelp()">How do I fix this?</button>`;}
+  else if(!S.onboarded){e='👋';t='Start here';b='New to this? Take the 1-minute tour of how the app works.';a=`<button class="btn pk" onclick="onboard(0)">Show me how it works</button>`;}
+  else if(locked(S.mode)){e='🔒';t='You\'re done for today';b='You hit your loss limit. That\'s the rule working, not you failing. Come back tomorrow.';a='';}
+  else if(S.kbet){e='🎟';t='Kalshi bet running';b=`You're ${short(S.kbet.sym||'BTC-USD')} ${S.kbet.side} with ${S.kbet.n} contract(s). My Bet shows hold or cash out live.`;a=`<button class="btn" onclick="tab('calls')">Check my bet</button>`;}
+  else if(op.length){e='👀';t='You have a trade open';b=`${short(op[0].sym)} ${dl(op[0].dir)}. Just let it play out. The app will ping you if it hits your bail-out or take-profit price. Then log how it ended.`;a=`<button class="btn" onclick="tab('trade')">See my trade</button>`;}
+  else if(act.length){const d=act[0];e='⚡';t=`${short(d.sym)} setup just fired!`;b=`${SETUPS[d.setup].name}, going ${dl(d.dir)}. Tap below and the Gate walks you through checking it.`;a=`<button class="btn pk" onclick="toGate('${d.id}')">Check it in the Gate</button>`;}
+  else if(done===0){e='📖';t='Read Lesson 1';b='5 minutes. How most beginners lose money, and the 3 rules that keep you from being one of them.';a=`<button class="btn" onclick="tab('learn')">Open Lesson 1</button>`;}
+  else if(!(r.lesson&&r.drill&&r.plan)){e='🌙';t='Do today\'s ritual';b=`${r.lesson?'✅':'⬜'} lesson · ${r.drill?'✅':'⬜'} 5 chart guesses · ${r.plan?'✅':'⬜'} tomorrow's plan`;a=`<button class="btn" onclick="tab('learn')">Go to the ritual</button>`;}
+  else{e='🕯';t='Nothing to do. That\'s good.';b='Ritual done, no setup firing. Leave the app open (or check back) and wait for the sparkle. Waiting IS the job.';a='';}
+  el.innerHTML=`<div class="card next"><div class="anton small" style="letter-spacing:1.5px">✦ your next step</div><div class="row" style="margin-top:4px"><span style="font-size:30px">${e}</span><span class="big">${t}</span></div><p>${b}</p>${a?`<div class="row wrapr" style="margin-top:10px">${a}</div>`:''}
+  ${S.onboarded?`<button class="btn sm ghost" style="margin-top:10px;font-size:10px;padding:5px 9px" onclick="onboard(0)">how does this app work?</button>`:''}</div>`;}
+
+/* ================== NAV + INIT ================== */
+function tab(t){document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+t));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  if(t==='today')requestAnimationFrame(()=>renderChart(true));if(t==='journal')renderJournal();if(t==='learn')renderLearn();if(t==='setups'){renderSetups();renderDetFeed();}if(t==='settings')renderSettings();if(t==='calls')renderCalls();if(t==='trade'){renderOpen();renderGate();}
+  window.scrollTo(0,0);}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+$('#modeBtn').onclick=()=>{if(S.mode==='real'){S.mode='paper';save();renderAll();toast('📝 Paper mode');return;}
+  if(!realUnlocked()){tab('learn');toast('Real mode is locked until you graduate 🎓');return;}
+  modal(`<div class="card-h"><h2>💸 Switch to real?</h2></div><div class="muted">Same rules, real consequences. Orders go in your broker; this app logs and guards. Smallest size first.</div><div class="row" style="margin-top:12px"><button class="btn pk" onclick="S.mode='real';save();closeModal();renderAll()">Go real</button><button class="btn ghost" onclick="closeModal()">Stay paper</button></div>`);};
+document.querySelectorAll('#gateCard .dirbtns button[data-d]').forEach(b=>b.onclick=()=>setDir(b.dataset.d));
+['#gSym','#gEntry','#gStop','#gTarget','#gSize','#gReason'].forEach(id=>$(id).addEventListener('input',renderGate));
+$('#gSetup').addEventListener('change',()=>{renderRules();renderGate();});
+$('#gLive').onclick=()=>{const s=$('#gSym').value.trim().toUpperCase();const p=livePx(s);if(isFinite(p)){$('#gEntry').value=p;renderGate();}else toast(isCrypto(s)?'No live price yet':'Stocks need a Finnhub key for live price');};
+$('#g2R').onclick=()=>{const f=gateVals();const r=Math.abs(f.entry-f.stop);if(r>0){$('#gTarget').value=+(f.dir==='LONG'?f.entry+2*r:f.entry-2*r).toPrecision(8);renderGate();}else toast('Set entry + stop first');};
+$('#gMax').onclick=()=>{gSizeAuto=true;const m=maxSafe(gateVals());if(isFinite(m)&&m>0){$('#gSize').value=m;renderGate();}else toast('Set entry + bail-out first');};
+$('#gGo').onclick=castTrade;
+$('#gNext').onclick=()=>showStep(gStep+1);$('#gBack').onclick=()=>showStep(gStep-1);$('#gSuggest').onclick=()=>suggestLevels(false);
+$('#gSize').addEventListener('input',()=>{gSizeAuto=false;});
+$('#planTxt').addEventListener('input',()=>{S.plans[today()]=$('#planTxt').value;save();clearTimeout(window._pt);window._pt=setTimeout(renderRitual,600);});
+window.addEventListener('resize',()=>{renderChart(true);});
+
+function renderAll(){renderNext();renderStatus();renderLive();renderChart(true);renderWatch();renderStocks();renderConditions();renderOpen();renderGate();
+  if($('#t-journal').classList.contains('on'))renderJournal();if($('#t-learn').classList.contains('on'))renderLearn();if($('#t-setups').classList.contains('on'))renderSetups();}
+
+fillSetupSelect();renderRules();bindSettings();renderCheat();renderGloss();renderAll();showStep(1);window.scrollTo(0,0);
+if(!S.onboarded)setTimeout(()=>onboard(0),700);
+loadChart();scan();pollStocks();
+setInterval(scan,30000);
+bindCalls();loadC1().then(()=>{engineTick();renderCalls();});
+setInterval(loadC1,20000);
+setInterval(()=>{engineTick();renderCalls();},2000);
+setInterval(pollPrices,3000);
+setInterval(()=>{if(S.tf!==300)loadChart();},15000);
+setInterval(pollStocks,60000);
+setInterval(()=>{renderStatus();renderConditions();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){scan();pollPrices();}});
+</script>
+</body>
+</html>
