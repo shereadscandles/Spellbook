@@ -384,6 +384,9 @@ nav.tabs button{font-size:12px!important}
 .valuecard input{background:#fff;color:#141414;border-color:#141414}
 .vverdict{font-family:'Anton';text-transform:uppercase;letter-spacing:.4px;font-size:18px;border:2px solid #141414;border-radius:12px;padding:10px 12px;box-shadow:3px 3px 0 #141414}
 .vverdict.good{background:#A3FF67;color:#141414}.vverdict.meh{background:#FFAEF1;color:#141414}.vverdict.bad{background:#141414;color:#fff}
+details.mini{margin-top:10px}
+details.mini>summary{list-style:none;cursor:pointer;font-size:12.5px;font-weight:700;opacity:.8}
+details.mini>summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
@@ -476,8 +479,8 @@ nav.tabs button{font-size:12px!important}
     <div id="callBox"></div>
     <div class="row wrapr" style="margin-top:10px"><button class="btn sm lav" onclick="shareCall()">📸 Share this call</button></div>
     <div id="valueBox"></div>
-    <label class="f">Line to beat (from your Kalshi market, optional)</label>
-    <div class="row"><input id="kLine" inputmode="decimal" placeholder="blank = price when the round started"><button class="btn sm lav" id="kLineClr">Clear</button></div>
+    <details class="mini"><summary>✏️ Set the line to beat by hand</summary>
+    <div class="row" style="margin-top:8px"><input id="kLine" inputmode="decimal" placeholder="blank = automatic"><button class="btn sm lav" id="kLineClr">Clear</button></div></details>
   </div>
 
   <div class="card amy">
@@ -489,15 +492,16 @@ nav.tabs button{font-size:12px!important}
     <button class="btn sm" style="margin-top:10px" onclick="shareRecord()">📸 Share my record</button>
   </div>
 
+  <details class="xtra" id="myBetWrap"><summary>🎟 Track a bet (optional) <span class="sticker pk" id="kbTag" style="margin-left:6px">—</span></summary>
   <div class="card fiji">
-    <div class="card-h"><h2>🎟 My Bet</h2><span class="sticker pk" id="kbTag">—</span></div>
     <div id="kbBox"></div>
   </div>
+  </details>
 
 
 
 
-  <div class="card lilac">
+  <div class="card lilac" id="ledgerCard">
     <div class="card-h"><h2>📒 Kalshi Ledger</h2></div>
     <div class="bigstats" id="kStats"></div>
     <div id="kList" style="margin-top:10px"></div>
@@ -702,6 +706,9 @@ nav.tabs button{font-size:12px!important}
     <div class="card-h"><h2><svg class="bolt"><use href="#bolt"/></svg>Stocks + Alerts</h2></div>
     <label class="f">Stock watchlist (comma separated)</label>
     <input id="sStocks" autocapitalize="characters">
+    <label class="f">Kalshi relay link (auto prices)</label>
+    <div class="row"><input id="sRelay" placeholder="https://your-relay.workers.dev" autocapitalize="off" autocomplete="off"><button class="btn sm pool" onclick="testRelay()">Test</button></div>
+    <div class="small" id="relayMsg" style="margin-top:4px"></div>
     <label class="f">Finnhub API key (free, for live stock quotes)</label>
     <input id="sFinn" placeholder="get one free at finnhub.io" autocomplete="off">
     <div class="row wrapr" style="margin-top:12px">
@@ -742,7 +749,7 @@ nav.tabs button{font-size:12px!important}
 
 <script>
 /* ================== CONSTANTS ================== */
-const APP_VERSION='2026.09.26-b';
+const APP_VERSION='2026.09.27-a';
 const API='https://api.exchange.coinbase.com';
 const CRYPTO=['BTC-USD','ETH-USD','SOL-USD','XRP-USD','DOGE-USD'];
 const KEY='csb_warroom_v1';
@@ -813,7 +820,7 @@ const PATTERNS=[
 ];
 
 /* ================== STATE ================== */
-const DEF={settings:{paperStart:10000,realStart:500,riskPct:1,dailyLossPct:3,maxTrades:4,minRR:1.5,stocks:['F','TSLA','AMD','NVDA','SOFI'],finnhub:'',sound:true,kLossCap:20,kMaxBets:6,autopilot:true,apLongOnly:true,callMin:70,handle:''},autolog:[],kprice:{},calls:{len:15,sym:'BTC-USD',rounds:{},hist:[],ungraded:[]},kbets:[],kbet:null,kline:{},
+const DEF={settings:{paperStart:10000,realStart:500,riskPct:1,dailyLossPct:3,maxTrades:4,minRR:1.5,stocks:['F','TSLA','AMD','NVDA','SOFI'],finnhub:'',sound:true,kLossCap:20,kMaxBets:6,autopilot:true,apLongOnly:true,callMin:70,handle:'',relay:''},autolog:[],kprice:{},calls:{len:15,sym:'BTC-USD',rounds:{},hist:[],ungraded:[]},kbets:[],kbet:null,kline:{},
   mode:'paper',trades:[],override:false,ritual:{},plans:{},drill:{right:0,total:0,byDay:{}},lessons:{},seen:{},sel:'BTC-USD',tf:300,jMode:'paper'};
 function deepMerge(a,b){for(const k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))deepMerge(a[k],b[k]);else a[k]=b[k];}return a;}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return deepMerge(JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
@@ -1350,7 +1357,7 @@ function renderDrill(){$('#drillScore').textContent=`${S.drill.right}/${S.drill.
 function renderLearn(){renderNext();renderRitual();renderGrad();renderLessons();renderDrill();$('#planTxt').value=S.plans[today()]||'';}
 
 /* ================== SETTINGS ================== */
-function renderSettings(){const s=S.settings;const ss=$('#saveStatus');if(ss)ss.innerHTML=saveOK?`✅ Saving on this device${lastSave?' · last saved '+new Date(lastSave).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'}):''}<br><span class="small" style="font-weight:500">${S.trades.length} trades · ${Object.keys(S.lessons).length} lessons · ${S.calls.hist.length} graded calls saved. iPhone note: the home-screen icon and Safari keep <b>separate</b> saves, so always use the icon.</span>`:'⚠️ Not saving on this screen (Private mode?).';$('#sPaper').value=s.paperStart;$('#sReal').value=s.realStart;$('#sRisk').value=s.riskPct;$('#sDaily').value=s.dailyLossPct;$('#sMaxT').value=s.maxTrades;$('#sRR').value=s.minRR;$('#sHandle').value=s.handle||'';$('#sKCap').value=s.kLossCap;$('#sKMax').value=s.kMaxBets;
+function renderSettings(){const s=S.settings;const ss=$('#saveStatus');if(ss)ss.innerHTML=saveOK?`✅ Saving on this device${lastSave?' · last saved '+new Date(lastSave).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'}):''}<br><span class="small" style="font-weight:500">${S.trades.length} trades · ${Object.keys(S.lessons).length} lessons · ${S.calls.hist.length} graded calls saved. iPhone note: the home-screen icon and Safari keep <b>separate</b> saves, so always use the icon.</span>`:'⚠️ Not saving on this screen (Private mode?).';$('#sPaper').value=s.paperStart;$('#sReal').value=s.realStart;$('#sRisk').value=s.riskPct;$('#sDaily').value=s.dailyLossPct;$('#sMaxT').value=s.maxTrades;$('#sRR').value=s.minRR;$('#sHandle').value=s.handle||'';$('#sRelay').value=s.relay||'';$('#sKCap').value=s.kLossCap;$('#sKMax').value=s.kMaxBets;
   $('#sStocks').value=s.stocks.join(', ');$('#sFinn').value=s.finnhub;$('#sSound').checked=s.sound;}
 function bindSettings(){const map=[['#sPaper','paperStart',0,1e9],['#sReal','realStart',0,1e9],['#sRisk','riskPct',.05,5],['#sDaily','dailyLossPct',.1,20],['#sMaxT','maxTrades',1,50],['#sRR','minRR',.5,10],['#sKCap','kLossCap',1,1e6],['#sKMax','kMaxBets',1,100]];
   map.forEach(([id,k,mn,mx])=>$(id).addEventListener('change',()=>{const v=num($(id).value);if(isFinite(v)){S.settings[k]=Math.min(mx,Math.max(mn,v));save();renderAll();}else renderSettings();}));
@@ -1392,7 +1399,7 @@ async function loadC1(){for(const p of CRYPTO){try{K.c1[p]=await getCandles(p,60
 function liveC1(sym){const px=M.px[sym];const cs=(K.c1[sym]||[]).map(c=>({...c}));if(cs.length&&isFinite(px)){const l=cs[cs.length-1];l.c=px;l.h=Math.max(l.h,px);l.l=Math.min(l.l,px);}return cs;}
 function candleAt(sym,t){return(K.c1[sym]||[]).find(c=>c.t===t);}
 const lk=(sym,start)=>sym+'|'+start;
-function lineFor(sym,r){const man=S.kline[lk(sym,r.start)];if(isFinite(man))return man;if(isFinite(r.line))return r.line;const c=candleAt(sym,r.start);return c?c.o:NaN;}
+function lineFor(sym,r){const man=S.kline[lk(sym,r.start)];if(isFinite(man))return man;const km=kFor(sym,r);if(km&&isFinite(km.strike)&&km.strike>0)return km.strike;if(isFinite(r.line))return r.line;const c=candleAt(sym,r.start);return c?c.o:NaN;}
 function tryGrade(){const keep=[];for(const r of S.calls.ungraded){const sym=r.sym||'BTC-USD';const c=candleAt(sym,r.end-60000);const liveOk=Date.now()-r.end<20000&&isFinite(r.endLive);
   const endPx=c&&Date.now()>=r.end+60000?c.c:(liveOk?r.endLive:NaN);
   if(!isFinite(endPx)){if(Date.now()-r.end<3*36e5)keep.push(r);continue;}
@@ -1459,19 +1466,18 @@ function renderValue(){const el=$('#valueBox');if(!el)return;const sym=S.calls.s
   if(!r||!cr){el.innerHTML='';return;}
   const dir=r.locked?r.dir:K.dir[sym];const conf=r.locked?r.conf:Math.round((dir==='UP'?cr.pUp:1-cr.pUp)*100);const key=lk(sym,r.start);
   if(!$('#vPrice')||el.dataset.k!==key){el.dataset.k=key;el.innerHTML=`<div class="valuecard"><div class="row"><span class="anton" style="font-size:17px">💰 Value check</span><div class="sp"></div><span class="sticker ink" id="vSide"></span></div>
-    <div class="small" style="margin:4px 0 8px;line-height:1.4">Is Kalshi's price worth it? Type what Kalshi charges for the side the bot likes.</div>
-    <div class="row"><input id="vPrice" inputmode="numeric" placeholder="Kalshi price in ¢ (e.g. 62)" value="${isFinite(S.kprice[key])?S.kprice[key]:''}"><span class="anton">¢</span></div>
-    <div id="vRes" style="margin-top:10px"></div></div>`;
+    <div id="vRes" style="margin-top:8px"></div>
+    <details class="mini" id="vManual"><summary>✏️ Enter Kalshi's price by hand</summary><div class="row" style="margin-top:8px"><input id="vPrice" inputmode="numeric" placeholder="price in ¢ (e.g. 62)" value="${isFinite(S.kprice[key])?S.kprice[key]:''}"><span class="anton">¢</span></div></details></div>`;
     $('#vPrice').addEventListener('input',()=>{const v=num($('#vPrice').value);if(isFinite(v)&&v>0&&v<100)S.kprice[key]=v;else delete S.kprice[key];save();renderValue();});}
   const pass=conf<S.settings.callMin;const side=dir==='UP'?'YES / UP':'NO / DOWN';$('#vSide').textContent=pass?'bot says PASS':side;
-  const cb=calib(sym,conf);const q=cb.q;const maxP=Math.max(1,Math.floor(q*100-kFee(Math.round(q*100))-3));const price=S.kprice[key];
+  const cb=calib(sym,conf);const q=cb.q;const maxP=Math.max(1,Math.floor(q*100-kFee(Math.round(q*100))-3));const km=kFor(sym,r);const auto=km?(dir==='UP'?km.ya:km.na):NaN;const price=isFinite(S.kprice[key])?S.kprice[key]:(auto>0&&auto<100?auto:NaN);$('#vSide').textContent=(pass?'bot says PASS':side)+(km?' · KALSHI LIVE':'');
   const basis=cb.src==='record'?`Based on its record at this confidence (${cb.n} rounds): wins about <b>${Math.round(q*100)}%</b>.`:`No track record at this confidence yet, so using its ${conf}% estimate.`;
   let out;
   if(pass)out=`<div class="vverdict bad">⏸ PASS: the bot isn't confident enough (${conf}%). No bet is the right bet.</div>`;
-  else if(!isFinite(price))out=`<div class="vverdict meh">Worth it at <b>${maxP}¢ or less</b> for ${side}. Enter Kalshi's price to check.</div>`;
+  else if(!isFinite(price))out=`<div class="vverdict meh">Worth it at <b>${maxP}¢ or less</b> for ${side}.<span class="small" style="display:block;font-family:Space Grotesk;text-transform:none;letter-spacing:0;margin-top:3px">${S.settings.relay?'Waiting on Kalshi prices…':'Only buy if Kalshi\'s price is at or under that.'}</span></div>`;
   else{const fee=kFee(price);const ev=q*100-price-fee;const win=100-price-fee;
     out=`<div class="vverdict ${ev>=5?'good':ev>=0?'meh':'bad'}">${ev>=5?'✅ GOOD VALUE':ev>=0?'🤏 THIN EDGE':'❌ OVERPRICED, SKIP'}<span class="small" style="display:block;font-family:Space Grotesk;text-transform:none;letter-spacing:0;margin-top:3px">Expected ${ev>=0?'+':''}${ev.toFixed(1)}¢ per contract · win pays +${win}¢ · lose costs −${price+fee}¢ (incl. ~${fee}¢ fee)</span></div>`;}
-  $('#vRes').innerHTML=out+`<div class="small" style="margin-top:6px;opacity:.85;line-height:1.4">${basis} Kalshi fees are estimated.</div>`;}
+  $('#vRes').innerHTML=out+(km&&!pass?`<div class="small" style="margin-top:6px">Kalshi now: YES ${km.ya}¢ · NO ${km.na}¢ · line ${fmt(km.strike)}</div>`:'')+`<div class="small" style="margin-top:6px;opacity:.85;line-height:1.4">${basis} Kalshi fees are estimated.</div>`;}
 function trustLine(sym,conf){const X=S.calls.hist.filter(x=>(x.sym||'BTC-USD')===sym&&Math.abs((x.conf||0)-conf)<=5);const w=X.filter(x=>x.won).length;
   const rec=X.length>=8?`When it's been this sure on ${short(sym)}, it was right <b>${Math.round(w/X.length*100)}%</b> of the time (${w}/${X.length}).`:`Not enough history at this confidence yet to judge.`;
   return `${rec} Fair Kalshi price at ${conf}% is about <b>${conf}¢</b>: only worth it if you can get in cheaper.`;}
@@ -1479,7 +1485,7 @@ function setLen(l){for(const [sym,r] of Object.entries(S.calls.rounds))if(r&&r.l
 function setCoin(p){S.calls.sym=p;save();$('#labBox').innerHTML='';renderCalls();}
 
 let kbKey='';
-function renderKBet(){const el=$('#kbBox');const b=S.kbet;const cap=S.settings.kLossCap;const tp=kToday();const nT=S.kbets.filter(x=>et(x.t).date===today()).length;
+function renderKBet(){const el=$('#kbBox');const mw=$('#myBetWrap');if(mw&&S.kbet)mw.open=true;const b=S.kbet;const cap=S.settings.kLossCap;const tp=kToday();const nT=S.kbets.filter(x=>et(x.t).date===today()).length;
   const blocked=tp<=-cap?`You're down ${money(-tp)} on Kalshi today (cap ${money(cap)}). Done for today.`:nT>=S.settings.kMaxBets?`That's ${nT} bets today, your limit. Done for today.`:'';
   if(!b){$('#kbTag').textContent='no bet';const key='nobet|'+(blocked?1:0)+'|'+kSide;if(key===kbKey&&el.innerHTML)return;kbKey=key;
     el.innerHTML=blocked?`<div class="banner"><span class="anton">🔒 Kalshi locked</span>${blocked}</div>`:`<div class="muted">Placed a bet on <b>${short(S.calls.sym)}</b> on Kalshi? Enter it here and you'll get a live hold / cash-out read.</div>
@@ -1507,7 +1513,7 @@ function startKBet(){const n=num($('#kbN').value),p=num($('#kbP').value);if(!(n>
 function settleK(how){const b=S.kbet;let out;if(how==='won')out=100;else if(how==='lost')out=0;else{out=num($('#kbSold').value);if(!(out>=0&&out<=100)){toast('Enter the price you sold at (¢)');return;}}
   const pnl=b.n*(out-b.p)/100;S.kbets.unshift({...b,how,out,pnl,t:b.t,closed:Date.now()});S.kbet=null;save();sfx(pnl>0?'win':'tick');toast(pnl>0?`✨ +${money(pnl)} logged`:`Logged ${money(pnl)}`);
   if(kToday()<=-S.settings.kLossCap){sfx('warn');setTimeout(()=>toast('🔒 Kalshi loss cap hit. Done for today.'),1600);}renderCalls();renderNext();}
-function renderKLedger(){const L=S.kbets;const w=L.filter(x=>x.pnl>0).length;const tot=L.reduce((a,x)=>a+x.pnl,0);const withBot=L.filter(x=>x.bot);const agree=withBot.filter(x=>x.bot===x.side);
+function renderKLedger(){const L=S.kbets;const lc=$('#ledgerCard');if(lc)lc.style.display=L.length?'':'none';const w=L.filter(x=>x.pnl>0).length;const tot=L.reduce((a,x)=>a+x.pnl,0);const withBot=L.filter(x=>x.bot);const agree=withBot.filter(x=>x.bot===x.side);
   $('#kStats').innerHTML=`<div><div class="k">Bets</div><div class="v">${L.length}</div></div><div><div class="k">Win rate</div><div class="v">${L.length?Math.round(w/L.length*100)+'%':'—'}</div></div><div><div class="k">Total P/L</div><div class="v ${tot>=0?'pos':'neg'}">${money(tot)}</div></div><div><div class="k">Today</div><div class="v ${kToday()>=0?'pos':'neg'}">${money(kToday())}</div></div>`;
   $('#kList').innerHTML=L.length?L.slice(0,20).map(x=>`<div class="srow"><span class="sticker ${x.side==='UP'?'pool':'pk'}" style="font-size:9px">${short(x.sym||'BTC-USD')} ${x.side}</span><span class="small">${dateStr(x.t)} ${timeStr(x.t)} · ${x.n}×${x.p}¢ → ${x.how==='sold'?'sold '+x.out+'¢':x.how}${x.bot?` · bot said ${x.bot}`:''}</span><div class="sp"></div><b class="mono ${x.pnl>=0?'pos':'neg'}">${money(x.pnl)}</b></div>`).join('')+(agree.length>=5?`<div class="muted small" style="margin-top:8px">When you bet WITH the bot: ${Math.round(agree.filter(x=>x.pnl>0).length/agree.length*100)}% win (${agree.length} bets). Against it: ${withBot.length-agree.length?Math.round(withBot.filter(x=>x.bot!==x.side&&x.pnl>0).length/(withBot.length-agree.length)*100)+'%':'—'}.</div>`:''):`<div class="empty">No Kalshi bets logged yet. Fees aren't included, so real results run a little lower.</div>`;}
 
@@ -1682,6 +1688,20 @@ async function shareRecord(){const L=S.calls.hist.filter(h=>!h.replay&&!isPass(h
 async function checkUpdate(){if(!/^https?:/.test(location.protocol))return;try{const t=await (await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'})).text();const m=/APP_VERSION='([^']+)'/.exec(t);
   if(m&&m[1]!==APP_VERSION)$('#updBanner').innerHTML=`<div class="banner" style="background:linear-gradient(135deg,#A3FF67,#36EDFF);color:#141414;cursor:pointer" onclick="location.replace(location.pathname+'?v=${m[1]}')"><span class="anton">✨ New version ready</span>Tap here to update. Your data stays.</div>`;}catch(e){}}
 
+
+/* ================== KALSHI AUTO (via relay) ================== */
+const KSER={'BTC-USD':'KXBTC15M','ETH-USD':'KXETH15M','SOL-USD':'KXSOL15M','DOGE-USD':'KXDOGE15M','XRP-USD':'KXXRP15M'};
+const KM={mk:{},ok:0,err:'',at:0};
+async function kalshiPoll(){const R=(S.settings.relay||'').replace(/\/+$/,'');if(!R)return;
+  for(const [sym,ser] of Object.entries(KSER)){try{const r=await fetch(`${R}/markets?series_ticker=${ser}&status=open&limit=5`,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();
+      const now=Date.now();const m=(j.markets||[]).map(m=>({...m,o:Date.parse(m.open_time),c:Date.parse(m.close_time)})).filter(m=>m.o<=now+60000&&m.c>now).sort((a,b)=>a.c-b.c)[0];
+      KM.mk[sym]=m?{ticker:m.ticker,strike:+m.floor_strike,ya:Math.round(+m.yes_ask_dollars*100),na:Math.round(+m.no_ask_dollars*100),yb:Math.round(+m.yes_bid_dollars*100),nb:Math.round(+m.no_bid_dollars*100),o:m.o,c:m.c}:null;KM.ok=Date.now();KM.err='';}
+    catch(e){KM.err=e.message||String(e);}}
+  KM.at=Date.now();}
+function kFor(sym,r){const m=KM.mk[sym];if(!m||!r)return null;if(Math.abs(m.c-r.end)>90000)return null;return m;}
+async function testRelay(){const v=$('#sRelay').value.trim().replace(/\/+$/,'');S.settings.relay=v;save();$('#relayMsg').textContent='Testing…';await kalshiPoll();
+  const n=Object.values(KM.mk).filter(Boolean).length;$('#relayMsg').textContent=KM.ok&&!KM.err?`✅ Connected. Live Kalshi markets found for ${n} coins.`:`⚠️ Couldn't reach it: ${KM.err||'no data'}`;}
+
 /* ================== BEGINNER HELP ================== */
 const GLOSS={
  gate:['The Gate','A 4-question checklist you answer before every trade. It stops the #1 beginner mistake: trading on a feeling. If you can\'t answer all 4, you don\'t trade.'],
@@ -1768,6 +1788,7 @@ setInterval(scan,30000);
 if(!S.calls.v2){const had=S.calls.hist.length;S.calls.hist=[];S.calls.ungraded=[];S.calls.v2=1;save();if(had)setTimeout(()=>toast('War Record reset: old results were inflated by a bug (fixed now).'),1500);}
 bindCalls();loadC1().then(()=>{engineTick();backfillCalls();renderCalls();});
 setInterval(()=>loadC1().then(()=>{backfillCalls();}),20000);
+kalshiPoll();setInterval(kalshiPoll,15000);
 setInterval(()=>{engineTick();renderCalls();},2000);
 setInterval(pollPrices,3000);
 setInterval(()=>{if(S.tf!==300)loadChart();},15000);
